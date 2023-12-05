@@ -6,6 +6,14 @@
 #include <QMediaPlayer>
 #include <QVideoWidget>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <QMessageBox>
+#include <QAction>
+#include <QLabel>
+#include <QDebug>
+#include <QFileDialog>
+#include <QLineEdit>
+#include <QListWidget>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -28,12 +36,15 @@ private slots:
     void pauseVideo();  // Added slot for pausing the video
     void handleMediaStateChanged();
     void handleMediaStatusChanged();
+    void ShowLogin();
+    void AttemptLogin();
 private:
     QToolBar *navToolBar;
     QMediaPlayer *mediaPlayer;
     QVideoWidget *videoWidget;
-    QPushButton *pauseButton = nullptr;
+    QPushButton *pauseButton;
     QWidget *profileWidget = nullptr;
+    QWidget *LoginWidget = nullptr;
 };
 
 #endif // MAINWINDOW_H
