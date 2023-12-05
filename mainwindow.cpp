@@ -12,6 +12,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     //setFixedSize(1280, 720);
     setMinimumSize(480, 800); // Smallest standard mobile resolution
+    
+    mediaPlayer = new QMediaPlayer(this);
+    videoWidget = new QVideoWidget(this);
+    mediaPlayer->setVideoOutput(videoWidget);
+
+    createMediaPlayerControls();
+
 
 }
 
@@ -264,10 +271,52 @@ void MainWindow::showProfile() {
 
 }
 
+
+void MainWindow::createMediaPlayerControls() {
+    // Create controls for the media player
+    QPushButton *playButton = new QPushButton("Play");
+    QPushButton *pauseButton = new QPushButton("Pause");
+    QSlider *volumeSlider = new QSlider(Qt::Horizontal);
+    volumeSlider->setRange(0, 100);
+    volumeSlider->setValue(50);
+
+    // Connect buttons to slots
+    connect(playButton, &QPushButton::clicked, this, &MainWindow::playVideo);
+    connect(pauseButton, &QPushButton::clicked, this, &MainWindow::pauseVideo);
+    connect(volumeSlider, &QSlider::valueChanged, this, &MainWindow::setVolume);
+
+    // Layout for media player controls
+    QHBoxLayout *mediaPlayerControlsLayout = new QHBoxLayout();
+    mediaPlayerControlsLayout->addWidget(playButton);
+    mediaPlayerControlsLayout->addWidget(pauseButton);
+    mediaPlayerControlsLayout->addWidget(volumeSlider);
+
+    // Add video widget and controls to the central layout
+    QVBoxLayout *centralLayout = dynamic_cast<QVBoxLayout*>(centralWidget()->layout());
+    if (centralLayout) {
+        centralLayout->addWidget(videoWidget);
+        centralLayout->addLayout(mediaPlayerControlsLayout);
+    }
+}
+
+void MainWindow::playVideo() {
+    mediaPlayer->play();
+}
+
+void MainWindow::pauseVideo() {
+    mediaPlayer->pause();
+}
+
+void MainWindow::setVolume(int volume) {
+    mediaPlayer->setVolume(volume);
+}
+
+
+
 void MainWindow::showOwnVideos() {
     // Implement the logic to show the "View Own Videos" section
     qDebug("Showing View Own Videos section");
-    QString FileName = QFileDialog::getOpenFileName(this,tr("Select Video File"),"",tr("MP4 Files (*.MP4"));
+    QString FileName = QFileDialog::getOpenFileName(this,tr("Select Video File"),"",tr("MP4 Files (*.mp4);;All Files (*)"));
 
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);

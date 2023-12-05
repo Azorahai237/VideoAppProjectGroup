@@ -30,15 +30,19 @@ private:
 public slots:
     void ToggleToolBar(bool b);
 private slots:
+    void playVideo();
+    void pauseVideo();
+    void setVolume(int volume);
     void showAddVideos();
     void showFeed();
     void showProfile();
     void showOwnVideos();
     void showHome();
-    void pauseVideo();  // Added slot for pausing the video
+    // void pauseVideo();  // Added slot for pausing the video
     void handleMediaStateChanged();
     void handleMediaStatusChanged();
-
+    void createMediaPlayerControls();
+    void ShowLogin();
     void AttemptLogin();
 private:
 
