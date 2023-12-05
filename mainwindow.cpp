@@ -1,10 +1,8 @@
 #include "mainwindow.h"
-#include <QAction>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QDebug>
-#include <QFileDialog>
+
+
+
+
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     createToolBar();
@@ -34,7 +32,7 @@ void MainWindow::createToolBar() {
     connect(feedAction, &QAction::triggered, this, &MainWindow::showFeed);
     connect(profileAction, &QAction::triggered, this, &MainWindow::showProfile);
     connect(viewOwnVideosAction, &QAction::triggered, this, &MainWindow::showOwnVideos);
-    connect(homeAction, &QAction::triggered, this, &MainWindow::showHome);
+    connect(homeAction, &QAction::triggered, this, &MainWindow::ShowLogin);
 
     // Add actions and separators to the toolbar with spacing
     navToolBar->addAction(addVideosAction);
@@ -75,7 +73,7 @@ void MainWindow::createMainContent() {
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
-    QLabel *contentLabel = new QLabel("Main Content Goes Here");
+    QLabel *contentLabel = new QLabel("Main Co/*ntent Goes Here");
     contentLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(contentLabel);
 }
@@ -99,6 +97,35 @@ void MainWindow::showAddVideos() {
 void MainWindow::showFeed() {
     // Implement the logic to show the "Feed" section
     qDebug("Showing Feed section");
+
+
+}
+void MainWindow::AttemptLogin(){
+    qDebug("Processing Login");
+
+
+}
+
+void MainWindow::ShowLogin(){
+        QLabel *titleLabel = new QLabel("Login Page", this);
+        QLineEdit *usernameLineEdit = new QLineEdit(this);
+        QLineEdit *passwordLineEdit = new QLineEdit(this);
+        QPushButton *loginButton = new QPushButton("Login", this);
+        titleLabel->setAlignment(Qt::AlignCenter);
+        usernameLineEdit->setPlaceholderText("Username");
+        passwordLineEdit->setPlaceholderText("Password");
+        connect(loginButton, &QPushButton::clicked, this, &MainWindow::AttemptLogin);
+
+        QWidget *LoginWidget = new QWidget(this);
+        QVBoxLayout *layout = new QVBoxLayout(LoginWidget);
+        layout->addWidget(titleLabel);
+        layout->addWidget(usernameLineEdit);
+        layout->addWidget(passwordLineEdit);
+        layout->addWidget(loginButton);
+
+        navToolBar->setVisible(true);
+        this->setCentralWidget(LoginWidget);
+
 
 }
 
