@@ -32,6 +32,7 @@ private:
     QMediaPlayer *mediaPlayer;
     QVideoWidget *videoWidget;
     QPushButton *pauseButton;
+    QWidget *profileWidget = nullptr;
 };
 
 #endif // MAINWINDOW_H
