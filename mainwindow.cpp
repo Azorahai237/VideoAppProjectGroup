@@ -56,6 +56,11 @@ void MainWindow::pauseVideo() {
         mediaPlayer->play();
     }
 }
+void MainWindow::ToggleToolBar(bool b) {
+    if (navToolBar) {
+        navToolBar->setVisible(b);
+    }
+}
 // void MainWindow::showVideo() {
 
 //     // Set the media content to the provided video file path
@@ -73,7 +78,7 @@ void MainWindow::createMainContent() {
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
-    QLabel *contentLabel = new QLabel("Main Co/*ntent Goes Here");
+    QLabel *contentLabel = new QLabel("Main Content Goes Here");
     contentLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(contentLabel);
 }
@@ -149,7 +154,10 @@ void MainWindow::showFeed() {
 
 }
 void MainWindow::AttemptLogin(){
-    qDebug("Processing Login");
+    ToggleToolBar(true);
+
+
+
 
 
 }

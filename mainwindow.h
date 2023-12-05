@@ -20,13 +20,15 @@ class MainWindow : public QMainWindow {
 
 public:
     MainWindow(QWidget *parent = nullptr);
-
+    void ShowLogin();
+    QToolBar *navToolBar;
 private:
     void createToolBar();
     void createMainContent();
     void showVideo();  // Added function for showing videos
 
-
+public slots:
+    void ToggleToolBar(bool b);
 private slots:
     void showAddVideos();
     void showFeed();
@@ -36,10 +38,10 @@ private slots:
     void pauseVideo();  // Added slot for pausing the video
     void handleMediaStateChanged();
     void handleMediaStatusChanged();
-    void ShowLogin();
+
     void AttemptLogin();
 private:
-    QToolBar *navToolBar;
+
     QMediaPlayer *mediaPlayer;
     QVideoWidget *videoWidget;
     QPushButton *pauseButton;
