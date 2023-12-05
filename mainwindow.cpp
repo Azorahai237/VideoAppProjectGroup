@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     createMainContent();
 
     setWindowTitle("Social Media App");
-    setFixedSize(1280, 720);
+    setFixedSize(720, 1280);
 }
 
 void MainWindow::createToolBar() {
