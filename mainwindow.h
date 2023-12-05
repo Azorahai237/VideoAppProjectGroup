@@ -18,6 +18,7 @@ private:
     void createMainContent();
     void showVideo();  // Added function for showing videos
 
+
 private slots:
     void showAddVideos();
     void showFeed();
@@ -31,7 +32,8 @@ private:
     QToolBar *navToolBar;
     QMediaPlayer *mediaPlayer;
     QVideoWidget *videoWidget;
-    QPushButton *pauseButton;
+    QPushButton *pauseButton = nullptr;
+    QWidget *profileWidget = nullptr;
 };
 
 #endif // MAINWINDOW_H

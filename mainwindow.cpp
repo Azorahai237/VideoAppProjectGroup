@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QDebug>
 #include <QFileDialog>
+#include <QListWidget>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     createToolBar();
@@ -97,6 +98,54 @@ void MainWindow::showAddVideos() {
 
 void MainWindow::showFeed() {
     // Implement the logic to show the "Feed" section
+    // Create a list widget for displaying videos in the feed
+    QListWidget *feedListWidget = new QListWidget(this);
+    setCentralWidget(feedListWidget);
+
+    // Simulate video data (replace this with your actual data)
+    QStringList videoTitles = {"Video 1", "Video 2", "Video 3"};
+    QStringList sharers = {"UserA", "UserB", "UserC"};
+
+    // Populate the feed list with videos and sharers
+    for (int i = 0; i < videoTitles.size(); ++i) {
+
+    // Create a list item
+    QListWidgetItem *item = new QListWidgetItem(feedListWidget);
+    item->setSizeHint(QSize(250, 150));  // Set the size of each item
+
+     // Create a custom widget for the list item
+     QWidget *videoItemWidget = new QWidget(feedListWidget);
+     videoItemWidget->setStyleSheet("background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 8px; margin: 5px;");
+
+     // Create a layout for the widget
+     QVBoxLayout *itemLayout = new QVBoxLayout(videoItemWidget);
+
+     // Add video thumbnail (replace "path_to_thumbnail" with the actual path or URL)
+     QLabel *thumbnailLabel = new QLabel(videoItemWidget);
+    thumbnailLabel->setPixmap(QPixmap("path_to_thumbnail").scaled(150, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    thumbnailLabel->setAlignment(Qt::AlignCenter);
+    itemLayout->addWidget(thumbnailLabel);
+
+    // Add video title label
+    QLabel *titleLabel = new QLabel(videoTitles.at(i), videoItemWidget);
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleLabel->setStyleSheet("font-weight: bold; margin-top: 5px;");
+    itemLayout->addWidget(titleLabel);
+
+    // Add sharer label
+    QLabel *sharerLabel = new QLabel("Shared by: " + sharers.at(i), videoItemWidget);
+    sharerLabel->setAlignment(Qt::AlignCenter);
+    sharerLabel->setStyleSheet("font-style: italic; color: #888;");
+    itemLayout->addWidget(sharerLabel);
+
+    // Set the widget for the list item
+    feedListWidget->setItemWidget(item, videoItemWidget);
+
+        }
+
+        // Connect the list item click event to a slot (you can implement this slot)
+        connect(feedListWidget, &QListWidget::itemClicked, this, [this](){ Q_UNUSED(this); });
+
     qDebug("Showing Feed section");
 
 }
