@@ -32,7 +32,7 @@ void MainWindow::createToolBar() {
     connect(feedAction, &QAction::triggered, this, &MainWindow::showFeed);
     connect(profileAction, &QAction::triggered, this, &MainWindow::showProfile);
     connect(viewOwnVideosAction, &QAction::triggered, this, &MainWindow::showOwnVideos);
-    connect(homeAction, &QAction::triggered, this, &MainWindow::ShowLogin);
+    connect(homeAction, &QAction::triggered, this, &MainWindow::showHome);
 
     // Add actions and separators to the toolbar with spacing
     navToolBar->addAction(addVideosAction);
