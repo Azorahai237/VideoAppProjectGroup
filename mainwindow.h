@@ -42,7 +42,6 @@ private slots:
     void handleMediaStateChanged();
     void handleMediaStatusChanged();
     void createMediaPlayerControls();
-    void ShowLogin();
     void AttemptLogin();
 private:
 

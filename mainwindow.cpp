@@ -56,13 +56,7 @@ void MainWindow::createToolBar() {
     addToolBar(Qt::BottomToolBarArea, navToolBar);
 }
 
-void MainWindow::pauseVideo() {
-    if (mediaPlayer->state() == QMediaPlayer::PlayingState) {
-        mediaPlayer->pause();
-    } else if (mediaPlayer->state() == QMediaPlayer::PausedState) {
-        mediaPlayer->play();
-    }
-}
+
 void MainWindow::ToggleToolBar(bool b) {
     if (navToolBar) {
         navToolBar->setVisible(b);
