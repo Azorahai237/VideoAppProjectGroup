@@ -1,17 +1,25 @@
 #include "mainwindow.h"
-
-
-
-
+#include <QAction>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QDebug>
+#include <QFileDialog>
+#include <QListWidget>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     createToolBar();
     createMainContent();
 
     setWindowTitle("Social Media App");
-
     //setFixedSize(1280, 720);
-    setMinimumSize(480, 800); // Smallest standard mobile resolution
+    setMinimumSize(480, 600); // Smallest standard mobile resolution revert 600 to 800
+
+    mediaPlayer = new QMediaPlayer(this);
+    videoWidget = new QVideoWidget(this);
+    mediaPlayer->setVideoOutput(videoWidget);
+
+    createMediaPlayerControls();
 
 }
 
@@ -49,13 +57,13 @@ void MainWindow::createToolBar() {
     addToolBar(Qt::BottomToolBarArea, navToolBar);
 }
 
-void MainWindow::pauseVideo() {
-    if (mediaPlayer->state() == QMediaPlayer::PlayingState) {
-        mediaPlayer->pause();
-    } else if (mediaPlayer->state() == QMediaPlayer::PausedState) {
-        mediaPlayer->play();
-    }
-}
+// void MainWindow::pauseVideo() {
+//     if (mediaPlayer->state() == QMediaPlayer::PlayingState) {
+//         mediaPlayer->pause();
+//     } else if (mediaPlayer->state() == QMediaPlayer::PausedState) {
+//         mediaPlayer->play();
+//     }
+// }
 // void MainWindow::showVideo() {
 
 //     // Set the media content to the provided video file path
@@ -73,7 +81,7 @@ void MainWindow::createMainContent() {
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
-    QLabel *contentLabel = new QLabel("Main Co/*ntent Goes Here");
+    QLabel *contentLabel = new QLabel("Main Content Goes Here");
     contentLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(contentLabel);
 }
@@ -107,73 +115,44 @@ void MainWindow::showFeed() {
     // Populate the feed list with videos and sharers
     for (int i = 0; i < videoTitles.size(); ++i) {
 
-    // Create a list item
-    QListWidgetItem *item = new QListWidgetItem(feedListWidget);
-    item->setSizeHint(QSize(250, 150));  // Set the size of each item
+        // Create a list item
+        QListWidgetItem *item = new QListWidgetItem(feedListWidget);
+        item->setSizeHint(QSize(250, 150));  // Set the size of each item
 
-     // Create a custom widget for the list item
-     QWidget *videoItemWidget = new QWidget(feedListWidget);
-     videoItemWidget->setStyleSheet("background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 8px; margin: 5px;");
+        // Create a custom widget for the list item
+        QWidget *videoItemWidget = new QWidget(feedListWidget);
+        videoItemWidget->setStyleSheet("background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 8px; margin: 5px;");
 
-     // Create a layout for the widget
-     QVBoxLayout *itemLayout = new QVBoxLayout(videoItemWidget);
+        // Create a layout for the widget
+        QVBoxLayout *itemLayout = new QVBoxLayout(videoItemWidget);
 
-     // Add video thumbnail (replace "path_to_thumbnail" with the actual path or URL)
-     QLabel *thumbnailLabel = new QLabel(videoItemWidget);
-    thumbnailLabel->setPixmap(QPixmap("path_to_thumbnail").scaled(150, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    thumbnailLabel->setAlignment(Qt::AlignCenter);
-    itemLayout->addWidget(thumbnailLabel);
+        // Add video thumbnail (replace "path_to_thumbnail" with the actual path or URL)
+        QLabel *thumbnailLabel = new QLabel(videoItemWidget);
+        thumbnailLabel->setPixmap(QPixmap("path_to_thumbnail").scaled(150, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        thumbnailLabel->setAlignment(Qt::AlignCenter);
+        itemLayout->addWidget(thumbnailLabel);
 
-    // Add video title label
-    QLabel *titleLabel = new QLabel(videoTitles.at(i), videoItemWidget);
-    titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet("font-weight: bold; margin-top: 5px;");
-    itemLayout->addWidget(titleLabel);
+        // Add video title label
+        QLabel *titleLabel = new QLabel(videoTitles.at(i), videoItemWidget);
+        titleLabel->setAlignment(Qt::AlignCenter);
+        titleLabel->setStyleSheet("font-weight: bold; margin-top: 5px;");
+        itemLayout->addWidget(titleLabel);
 
-    // Add sharer label
-    QLabel *sharerLabel = new QLabel("Shared by: " + sharers.at(i), videoItemWidget);
-    sharerLabel->setAlignment(Qt::AlignCenter);
-    sharerLabel->setStyleSheet("font-style: italic; color: #888;");
-    itemLayout->addWidget(sharerLabel);
+        // Add sharer label
+        QLabel *sharerLabel = new QLabel("Shared by: " + sharers.at(i), videoItemWidget);
+        sharerLabel->setAlignment(Qt::AlignCenter);
+        sharerLabel->setStyleSheet("font-style: italic; color: #888;");
+        itemLayout->addWidget(sharerLabel);
 
-    // Set the widget for the list item
-    feedListWidget->setItemWidget(item, videoItemWidget);
+        // Set the widget for the list item
+        feedListWidget->setItemWidget(item, videoItemWidget);
 
-        }
+    }
 
-        // Connect the list item click event to a slot (you can implement this slot)
-        connect(feedListWidget, &QListWidget::itemClicked, this, [this](){ Q_UNUSED(this); });
+    // Connect the list item click event to a slot (you can implement this slot)
+    connect(feedListWidget, &QListWidget::itemClicked, this, [this](){ Q_UNUSED(this); });
 
     qDebug("Showing Feed section");
-
-
-}
-void MainWindow::AttemptLogin(){
-    qDebug("Processing Login");
-
-
-}
-
-void MainWindow::ShowLogin(){
-        QLabel *titleLabel = new QLabel("Login Page", this);
-        QLineEdit *usernameLineEdit = new QLineEdit(this);
-        QLineEdit *passwordLineEdit = new QLineEdit(this);
-        QPushButton *loginButton = new QPushButton("Login", this);
-        titleLabel->setAlignment(Qt::AlignCenter);
-        usernameLineEdit->setPlaceholderText("Username");
-        passwordLineEdit->setPlaceholderText("Password");
-        connect(loginButton, &QPushButton::clicked, this, &MainWindow::AttemptLogin);
-
-        QWidget *LoginWidget = new QWidget(this);
-        QVBoxLayout *layout = new QVBoxLayout(LoginWidget);
-        layout->addWidget(titleLabel);
-        layout->addWidget(usernameLineEdit);
-        layout->addWidget(passwordLineEdit);
-        layout->addWidget(loginButton);
-
-        navToolBar->setVisible(true);
-        this->setCentralWidget(LoginWidget);
-
 
 }
 
@@ -256,10 +235,55 @@ void MainWindow::showProfile() {
 
 }
 
+
+
+
+void MainWindow::createMediaPlayerControls() {
+    // Create controls for the media player
+    QPushButton *playButton = new QPushButton("Play");
+    QPushButton *pauseButton = new QPushButton("Pause");
+    QSlider *volumeSlider = new QSlider(Qt::Horizontal);
+    volumeSlider->setRange(0, 100);
+    volumeSlider->setValue(50);
+
+    // Connect buttons to slots
+    connect(playButton, &QPushButton::clicked, this, &MainWindow::playVideo);
+    connect(pauseButton, &QPushButton::clicked, this, &MainWindow::pauseVideo);
+    connect(volumeSlider, &QSlider::valueChanged, this, &MainWindow::setVolume);
+
+    // Layout for media player controls
+    QHBoxLayout *mediaPlayerControlsLayout = new QHBoxLayout();
+    mediaPlayerControlsLayout->addWidget(playButton);
+    mediaPlayerControlsLayout->addWidget(pauseButton);
+    mediaPlayerControlsLayout->addWidget(volumeSlider);
+
+    // Add video widget and controls to the central layout
+    QVBoxLayout *centralLayout = dynamic_cast<QVBoxLayout*>(centralWidget()->layout());
+    if (centralLayout) {
+        centralLayout->addWidget(videoWidget);
+        centralLayout->addLayout(mediaPlayerControlsLayout);
+    }
+}
+
+void MainWindow::playVideo() {
+    mediaPlayer->play();
+}
+
+void MainWindow::pauseVideo() {
+    mediaPlayer->pause();
+}
+
+void MainWindow::setVolume(int volume) {
+    mediaPlayer->setVolume(volume);
+}
+
+
+
+
 void MainWindow::showOwnVideos() {
     // Implement the logic to show the "View Own Videos" section
     qDebug("Showing View Own Videos section");
-    QString FileName = QFileDialog::getOpenFileName(this,tr("Select Video File"),"",tr("MP4 Files (*.MP4"));
+    QString FileName = QFileDialog::getOpenFileName(this,tr("Select Video File"),"",tr("MP4 Files (*.mp4);;All Files (*)"));
 
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -275,7 +299,7 @@ void MainWindow::showOwnVideos() {
     mediaPlayer->setVideoOutput(videoWidget);
 
 
-    mediaPlayer->setMedia(QUrl(FileName));
+    mediaPlayer->setMedia(QUrl::fromLocalFile(FileName));
     mediaPlayer->play();
 
 }
@@ -284,4 +308,3 @@ void MainWindow::showHome() {
     // Implement the logic to show the "Home" section
     qDebug("Showing Home section");
 }
-
