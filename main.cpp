@@ -6,8 +6,8 @@ int main(int argc, char *argv[]) {
 
     MainWindow mainWindow;
     mainWindow.show();
-    
+    mainWindow.ShowLogin();
+
     return app.exec();
 }
-
 
