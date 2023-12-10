@@ -1,52 +1,32 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QToolBar>
-#include <QMediaPlayer>
-#include <QVideoWidget>
+#include <QWidget>
+#include <QStackedWidget>
 #include <QPushButton>
-#include <QVBoxLayout>
-#include <QMessageBox>
-#include <QAction>
-#include <QLabel>
-#include <QDebug>
-#include <QFileDialog>
-#include <QLineEdit>
-#include <QListWidget>
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QWidget {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    void ShowLogin();
-    QToolBar *navToolBar;
-private:
-    void createToolBar();
-    void createMainContent();
-    void showVideo();  // Added function for showing videos
+    MainWindow();
 
-public slots:
-    void ToggleToolBar(bool b);
 private slots:
-    void showAddVideos();
-    void showFeed();
-    void showProfile();
-    void showOwnVideos();
-    void showHome();
-    void pauseVideo();  // Added slot for pausing the video
-    void handleMediaStateChanged();
-    void handleMediaStatusChanged();
+    void goToPreviousPage();
+    void goToNextPage();
+    void goToPage(int index);
+    void SetupFeedPage();
 
-    void AttemptLogin();
 private:
-
-    QMediaPlayer *mediaPlayer;
-    QVideoWidget *videoWidget;
-    QPushButton *pauseButton;
-    QWidget *profileWidget = nullptr;
-    QWidget *LoginWidget = nullptr;
+    QStackedWidget stackedWidget;
+    QPushButton buttonPrevious;
+    QPushButton buttonNext;
+    QPushButton buttonPage1;
+    QPushButton buttonPage2;
+    QPushButton buttonPage3;
+    QPushButton buttonPage4;
+    QPushButton buttonPage5;
+    QPushButton buttonPage6;
 };
 
 #endif // MAINWINDOW_H
