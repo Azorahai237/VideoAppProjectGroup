@@ -4,6 +4,20 @@
 #include <QWidget>
 #include <QStackedWidget>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QListWidget>
+#include <QLabel>
+#include <QCamera>
+#include <QCameraViewfinder>
+#include <QCameraImageCapture>
+#include <QStackedLayout>
+#include <QMediaRecorder>
+#include <QPainter>
+#include <QMediaPlayer>
+#include <QVideoWidget>
+#include <QMediaPlaylist>
+#include <QSlider>
 
 class MainWindow : public QWidget {
     Q_OBJECT
@@ -15,7 +29,10 @@ private slots:
     void goToPreviousPage();
     void goToNextPage();
     void goToPage(int index);
-    void SetupFeedPage();
+    void SetupFeedPage(QWidget *page);
+    void SetupAddVideoPage(QWidget *page);
+    void SetupProfilePage(QWidget *page);
+    void SetupGalleryPage(QWidget *page);
 
 private:
     QStackedWidget stackedWidget;
@@ -27,6 +44,8 @@ private:
     QPushButton buttonPage4;
     QPushButton buttonPage5;
     QPushButton buttonPage6;
+    QMediaPlayer mediaPlayer;
+    QVideoWidget videoWidget;
 };
 
 #endif // MAINWINDOW_H
