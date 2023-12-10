@@ -347,7 +347,7 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     // Create a media playlist and add video files to it
     QMediaPlaylist *playlist = new QMediaPlaylist;
     playlist->addMedia(QUrl("qrc:/videos/videos/c.mp4"));
-    playlist->addMedia(QUrl("pqrc:/videos/videos/e.mp4"));
+    playlist->addMedia(QUrl("qrc:/videos/videos/e.mp4"));
     playlist->addMedia(QUrl("qrc:/videos/videos/g.mp4"));
     // Add more videos as needed
     playlist->setPlaybackMode(QMediaPlaylist::Loop);
@@ -369,12 +369,66 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
         playPauseButton->setText(state == QMediaPlayer::PlayingState ? "Pause" : "Play");
     });
 
-    // Add the video widget to the layout
+    // Create and set up the volume slider
+    volumeSlider.setOrientation(Qt::Horizontal);
+    volumeSlider.setRange(0, 100); // Set the range from 0 to 100
+    volumeSlider.setValue(50);     // Set the initial volume
+    connect(&volumeSlider, &QSlider::valueChanged, this, &MainWindow::updateVolume);
+
+    // Create and set up the position slider
+    positionSlider.setOrientation(Qt::Horizontal);
+    connect(&positionSlider, &QSlider::sliderMoved, this, &MainWindow::setPosition);
+
+    // Create and set up the skip buttons
+    buttonSkipPrevious.setText("Previous");
+    connect(&buttonSkipPrevious, &QPushButton::clicked, this, &MainWindow::goToPreviousVideo);
+
+    buttonSkipNext.setText("Next");
+    connect(&buttonSkipNext, &QPushButton::clicked, this, &MainWindow::goToNextVideo);
+
+    // Connect media player state changes to update skip buttons
+    connect(&mediaPlayer, &QMediaPlayer::stateChanged, [this](){
+        buttonSkipPrevious.setEnabled(mediaPlayer.position() > 2000); // Enable previous button if more than 2 seconds into the video
+        buttonSkipNext.setEnabled(true); // Always enable next button
+    });
+
+    // Add the video widget, play/pause button, volume slider, position slider, and skip buttons to the layout
     layout->addWidget(&videoWidget);
     layout->addWidget(playPauseButton);
+    layout->addWidget(&volumeSlider);
+    layout->addWidget(&positionSlider);
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->addWidget(&buttonSkipPrevious);
+    buttonLayout->addWidget(&buttonSkipNext);
+    layout->addLayout(buttonLayout);
 
     // Set the layout for the page
     page->setLayout(layout);
+}
+
+
+
+void MainWindow::goToPreviousVideo() {
+    int currentIndex = mediaPlayer.playlist()->currentIndex();
+    if (currentIndex > 0) {
+        mediaPlayer.playlist()->previous();
+    }
+}
+
+void MainWindow::goToNextVideo() {
+    int currentIndex = mediaPlayer.playlist()->currentIndex();
+    if (currentIndex < mediaPlayer.playlist()->mediaCount() - 1) {
+        mediaPlayer.playlist()->next();
+    }
+}
+
+void MainWindow::updateVolume(int volume) {
+    mediaPlayer.setVolume(volume);
+}
+
+void MainWindow::setPosition(int position) {
+    mediaPlayer.setPosition(position);
 }
 
 

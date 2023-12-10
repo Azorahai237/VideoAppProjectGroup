@@ -33,6 +33,10 @@ private slots:
     void SetupAddVideoPage(QWidget *page);
     void SetupProfilePage(QWidget *page);
     void SetupGalleryPage(QWidget *page);
+    void updateVolume(int volume);
+    void goToPreviousVideo();
+    void goToNextVideo();
+    void setPosition(int position);
 
 private:
     QStackedWidget stackedWidget;
@@ -46,6 +50,10 @@ private:
     QPushButton buttonPage6;
     QMediaPlayer mediaPlayer;
     QVideoWidget videoWidget;
+    QSlider volumeSlider;
+    QPushButton buttonSkipPrevious;
+    QPushButton buttonSkipNext;
+    QSlider positionSlider;
 };
 
 #endif // MAINWINDOW_H
