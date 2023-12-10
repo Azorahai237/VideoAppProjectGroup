@@ -12,9 +12,22 @@ MainWindow::MainWindow() {
 
     for (int i = 0; i < 6; ++i) {
         pages[i] = new QWidget;
-        QVBoxLayout *layout = new QVBoxLayout(pages[i]);
-        layout->addWidget(new QPushButton("Page " + QString::number(i + 1) + " Button"));
-        pages[i]->setLayout(layout);
+
+        // Call the respective setup function for each page
+        if (i == 0) {
+            setupPage1(pages[i]);
+        } else if (i == 1) {
+            setupPage2(pages[i]);
+        } else if (i == 2) {
+            setupPage3(pages[i]);
+        } else if (i == 3) {
+            setupPage4(pages[i]);
+        } else if (i == 4) {
+            setupPage5(pages[i]);
+        } else if (i == 5) {
+            setupPage6(pages[i]);
+        }
+
         stackedWidget.addWidget(pages[i]);
     }
 
