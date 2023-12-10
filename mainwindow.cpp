@@ -34,7 +34,7 @@ void MainWindow::createToolBar() {
     QAction *viewOwnVideosAction = new QAction("View Own Videos", this);
     QAction *homeAction = new QAction("Home", this);
 
-    // Connect actions to slots (you can implement these slots)
+    // Connect actions to slots (you can imp lement these slots)
     connect(addVideosAction, &QAction::triggered, this, &MainWindow::showAddVideos);
     connect(feedAction, &QAction::triggered, this, &MainWindow::showFeed);
     connect(profileAction, &QAction::triggered, this, &MainWindow::showProfile);
