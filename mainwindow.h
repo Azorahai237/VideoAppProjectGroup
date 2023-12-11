@@ -9,6 +9,7 @@
 #include <QListWidget>
 #include <QLabel>
 #include <QCamera>
+
 #include <QCameraViewfinder>
 #include <QCameraImageCapture>
 #include <QStackedLayout>
@@ -29,7 +30,7 @@ private slots:
     void goToPreviousPage();
     void goToNextPage();
     void goToPage(int index);
-    void SetupFeedPage(QWidget *page);
+
     void SetupAddVideoPage(QWidget *page);
     void SetupProfilePage(QWidget *page);
     void SetupGalleryPage(QWidget *page);
