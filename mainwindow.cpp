@@ -38,10 +38,13 @@ private:
 };
 
 MainWindow::MainWindow(){
-    // Create six pages
-    QWidget *pages[4];
+    awesome = new fa::QtAwesome(this);
+    awesome->initFontAwesome();
 
-    for (int i = 0; i < 4; ++i) {
+    // Create six pages
+    QWidget *pages[6];
+
+    for (int i = 0; i < 6; ++i) {
         pages[i] = new QWidget;
 
         // Call the respective setup function for each page
@@ -53,36 +56,32 @@ MainWindow::MainWindow(){
             SetupGalleryPage(pages[i]);
         } else if (i == 3) {
             SetupProfilePage(pages[i]);
-        }
-        //  else if (i == 4) {
-        //     setupPage5(pages[i]);
-        // } else if (i == 5) {
-        //     setupPage6(pages[i]);
-        // }
+        } else if (i == 4) {
+            SetupLoginPage(pages[i]);
+        } else if (i == 5) {
+            SetupSettingsPage(pages[i]);
+         }
 
         stackedWidget.addWidget(pages[i]);
     }
 
     // Connect buttons to navigate through pages
 
-    connect(&buttonPage1, &QPushButton::clicked, this, [this](){ goToPage(0); });
-    connect(&buttonPage2, &QPushButton::clicked, this, [this](){ goToPage(1); });
-    connect(&buttonPage3, &QPushButton::clicked, this, [this](){ goToPage(2); });
-    connect(&buttonPage4, &QPushButton::clicked, this, [this](){ goToPage(3); });
+    buttonPage1 = new QPushButton(awesome->icon("fa-house"), "Feed");
+    buttonPage2 = new QPushButton(awesome->icon("fa-video"), "Add Video");
+    buttonPage3 = new QPushButton(awesome->icon("fa-image"), "Gallery");
+    buttonPage4 = new QPushButton(awesome->icon("fa-circle-user"), "Profile");
+    buttonPage5 = new QPushButton(awesome->icon("fa-right-to-bracket"), "Login");
+
+    buttonPage4->setVisible(false);
+
+    connect(buttonPage1, &QPushButton::clicked, this, [this](){ goToPage(0); });
+    connect(buttonPage2, &QPushButton::clicked, this, [this](){ goToPage(1); });
+    connect(buttonPage3, &QPushButton::clicked, this, [this](){ goToPage(2); });
+    connect(buttonPage4, &QPushButton::clicked, this, [this](){ goToPage(3); });
+    connect(buttonPage5, &QPushButton::clicked, this, [this](){ goToPage(4); });
     // connect(&buttonPage5, &QPushButton::clicked, this, [this](){ goToPage(4); });
     // connect(&buttonPage6, &QPushButton::clicked, this, [this](){ goToPage(5); });
-
-
-    QLabel *labelPage1 = new QLabel("Feed");
-    QLabel *labelPage2 = new QLabel("Add Video");
-    QLabel *labelPage3 = new QLabel("Gallery");
-    QLabel *labelPage4 = new QLabel("Profile");
-
-    buttonPage1.setText(labelPage1->text());
-    buttonPage2.setText(labelPage2->text());
-    buttonPage3.setText(labelPage3->text());
-    buttonPage4.setText(labelPage4->text());
-
 
     // Create a layout for the main window
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -90,15 +89,15 @@ MainWindow::MainWindow(){
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
 
-    buttonLayout->addWidget(&buttonPage1);
-    buttonLayout->addWidget(&buttonPage2);
-    buttonLayout->addWidget(&buttonPage3);
-    buttonLayout->addWidget(&buttonPage4);
+    buttonLayout->addWidget(buttonPage1);
+    buttonLayout->addWidget(buttonPage2);
+    buttonLayout->addWidget(buttonPage3);
+    buttonLayout->addWidget(buttonPage4);
+    buttonLayout->addWidget(buttonPage5);
     // mainLayout->addWidget(&buttonPage5);
     // mainLayout->addWidget(&buttonPage6);
     mainLayout->addLayout(buttonLayout);
     setLayout(mainLayout);
-
 }
 
 void MainWindow::SetupFeedPage(QWidget *page) {
@@ -225,8 +224,8 @@ void MainWindow::SetupAddVideoPage(QWidget *page) {
 void MainWindow::SetupProfilePage(QWidget *page){
     QVBoxLayout *layout = new QVBoxLayout(page);
     // 1st Layer: Top left - Button to go to settings
-    QPushButton *settingsButton = new QPushButton("Settings", this);
-    connect(settingsButton, &QPushButton::clicked, [this](){ Q_UNUSED(this); });
+    QPushButton *settingsButton = new QPushButton(awesome->icon("fa-gear"), "Settings", this);
+    connect(settingsButton, &QPushButton::clicked, this, [this](){ goToPage(5); });
 
     // 1st Layer: Top center - Large text "Profile"
     QLabel *profileLabel = new QLabel("Your Profile", this);
@@ -234,8 +233,8 @@ void MainWindow::SetupProfilePage(QWidget *page){
     profileLabel->setAlignment(Qt::AlignCenter);
 
     // 1st Layer: Top right - Button to log out
-    QPushButton *logoutButton = new QPushButton("Logout", this);
-    connect(logoutButton, &QPushButton::clicked, [this](){ Q_UNUSED(this); });
+    QPushButton *logoutButton = new QPushButton(awesome->icon("fa-right-from-bracket"), "Logout", this);
+    connect(logoutButton, &QPushButton::clicked, this, &MainWindow::logout);
 
     // Create a horizontal layout for the 1st layer
     QHBoxLayout *layer1Layout = new QHBoxLayout();
@@ -407,7 +406,91 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     page->setLayout(layout);
 }
 
+void MainWindow::SetupLoginPage(QWidget *page){
+    QWidget *container = new QWidget(page);
+    QVBoxLayout *mainLayout = new QVBoxLayout(container);
 
+    QWidget *loginForm = new QWidget(container);
+    loginForm->setObjectName("loginForm");
+    loginForm->setStyleSheet("#loginForm {\
+                                background-color: white;\
+                                border: 1px solid #ccc;\
+                                border-radius: 3px;\
+                                padding: 50px;\
+                            }");
+
+    QVBoxLayout *loginFormVBox = new QVBoxLayout(loginForm);
+
+    QLabel *loginLabel = new QLabel("Login/Sign Up", loginForm);
+    loginLabel->setStyleSheet("font-size: 28pt;");
+
+    QLabel *descriptionLabel = new QLabel("Make sure to choose a strong password", loginForm);
+
+    QLineEdit *username = new QLineEdit(loginForm);
+    username->setPlaceholderText("Username");
+
+    QLineEdit *password = new QLineEdit(loginForm);
+    password->setPlaceholderText("password");
+
+    QPushButton *loginButton = new QPushButton("Login/Sign Up", loginForm);
+    connect(loginButton, &QPushButton::clicked, this, &MainWindow::login);
+
+    loginFormVBox->addWidget(loginLabel);
+    loginFormVBox->addWidget(descriptionLabel);
+    loginFormVBox->addWidget(username);
+    loginFormVBox->addWidget(password);
+    loginFormVBox->addWidget(loginButton);
+
+    mainLayout->addWidget(loginForm, 1, Qt::AlignHCenter | Qt::AlignVCenter);
+
+    qDebug("Showing Login page");
+}
+
+void MainWindow::SetupSettingsPage(QWidget *page){
+    QVBoxLayout *layout = new QVBoxLayout(page);
+
+    QPushButton *backButton = new QPushButton(awesome->icon("fa-chevron-left"), "Back", page);
+    connect(backButton, &QPushButton::clicked, this, [this](){ goToPage(3); });
+    layout->addWidget(backButton);
+
+    QLabel *settingsLabel = new QLabel("Settings", page);
+    settingsLabel->setStyleSheet("font-size: 28pt;");
+    layout->addWidget(settingsLabel);
+
+    addSettingSwitch(layout, "Wi-Fi", "Enable Wi-Fi");
+    addSettingSwitch(layout, "Bluetooth", "Enable Bluetooth");
+    addSettingSwitch(layout, "Notifications", "Enable Notifications");
+
+    page->setLayout(layout);
+
+    qDebug("Showing Settings page");
+}
+
+void MainWindow::addSettingSwitch(QVBoxLayout *layout, const QString &settingName, const QString &settingDescription) {
+    QWidget *settingWidget = new QWidget;
+    QHBoxLayout *settingLayout = new QHBoxLayout(settingWidget);
+
+    QLabel *settingLabel = new QLabel(settingDescription, settingWidget);
+
+    QCheckBox *settingSwitch = new QCheckBox(settingWidget);
+
+    settingLayout->addWidget(settingLabel);
+    settingLayout->addWidget(settingSwitch);
+
+    layout->addWidget(settingWidget);
+}
+
+void MainWindow::login() {
+    buttonPage4->setVisible(true);
+    buttonPage5->setVisible(false);
+    goToPage(3);
+}
+
+void MainWindow::logout() {
+    buttonPage4->setVisible(false);
+    buttonPage5->setVisible(true);
+    goToPage(4);
+}
 
 void MainWindow::goToPreviousVideo() {
     int currentIndex = mediaPlayer.playlist()->currentIndex();
