@@ -60,8 +60,8 @@ private:
     QMediaPlayer mediaPlayer;
     QVideoWidget videoWidget;
     QSlider volumeSlider;
-    QPushButton buttonSkipPrevious;
-    QPushButton buttonSkipNext;
+    QPushButton* buttonSkipPrevious;
+    QPushButton* buttonSkipNext;
     QSlider positionSlider;
 };
 
