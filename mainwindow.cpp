@@ -359,16 +359,32 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     });
 
     // Create and set up the volume slider with a green color
+    QLabel *volumeLabel = new QLabel("Volume", page);  // Smaller label text
+    volumeLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  // Set fixed size policy
+    volumeLabel->setAlignment(Qt::AlignHCenter);  // Center align text
     volumeSlider.setOrientation(Qt::Horizontal);
-    volumeSlider.setRange(0, 100); // Set the range from 0 to 100
-    volumeSlider.setValue(50);     // Set the initial volume
+    volumeSlider.setRange(0, 100);
+    volumeSlider.setValue(50);
     volumeSlider.setStyleSheet("QSlider::groove:horizontal { background: #4CAF50; border: 1px solid #4CAF50; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
     connect(&volumeSlider, &QSlider::valueChanged, this, &MainWindow::updateVolume);
 
+
     // Create and set up the position slider with a green color
+    QLabel *positionLabel = new QLabel("Position", page);  // Smaller label text
+    positionLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  // Set fixed size policy
+    positionLabel->setAlignment(Qt::AlignHCenter);  // Center align text
     positionSlider.setOrientation(Qt::Horizontal);
     positionSlider.setStyleSheet("QSlider::groove:horizontal { background: #4CAF50; border: 1px solid #4CAF50; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
     connect(&positionSlider, &QSlider::sliderMoved, this, &MainWindow::setPosition);
+
+    // Create layouts for each label-slider pair
+    QHBoxLayout *volumeLayout = new QHBoxLayout;
+    volumeLayout->addWidget(volumeLabel);
+    volumeLayout->addWidget(&volumeSlider);
+
+    QHBoxLayout *positionLayout = new QHBoxLayout;
+    positionLayout->addWidget(positionLabel);
+    positionLayout->addWidget(&positionSlider);
 
     // Connect position slider to media player
     connect(&mediaPlayer, &QMediaPlayer::positionChanged, &positionSlider, &QSlider::setValue);
@@ -392,7 +408,9 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     // Add the video widget, play/pause button, volume slider, position slider, and skip buttons to the layout
     layout->addWidget(&videoWidget);
     layout->addWidget(playPauseButton);
+    layout->addWidget(volumeLabel);
     layout->addWidget(&volumeSlider);
+    layout->addWidget(positionLabel);
     layout->addWidget(&positionSlider);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
