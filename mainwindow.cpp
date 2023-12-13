@@ -344,8 +344,10 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     // Set the playlist to the media player
     mediaPlayer.setPlaylist(playlist);
 
+    mediaPlayer.play();
+
     // Connect play/pause button to toggle playback
-    QPushButton *playPauseButton = new QPushButton("Play/Pause", page);
+    QPushButton *playPauseButton = new QPushButton(awesome->icon("fa-play"), "", page);
     connect(playPauseButton, &QPushButton::clicked, [this](){
         if (mediaPlayer.state() == QMediaPlayer::PlayingState)
             mediaPlayer.pause();
@@ -354,8 +356,8 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     });
 
     // Connect media player state changes to update button text
-    connect(&mediaPlayer, &QMediaPlayer::stateChanged, [playPauseButton](QMediaPlayer::State state){
-        playPauseButton->setText(state == QMediaPlayer::PlayingState ? "Pause" : "Play");
+    connect(&mediaPlayer, &QMediaPlayer::stateChanged, [playPauseButton, this](QMediaPlayer::State state){
+        playPauseButton->setIcon(state == QMediaPlayer::PlayingState ? (awesome->icon("fa-pause"))  : (awesome->icon("fa-play")));
     });
 
     // Create and set up the volume slider with a green color
@@ -377,16 +379,16 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     connect(&mediaPlayer, &QMediaPlayer::durationChanged, &positionSlider, &QSlider::setMaximum);
 
     // Create and set up the skip buttons
-    buttonSkipPrevious.setText("Previous");
-    connect(&buttonSkipPrevious, &QPushButton::clicked, this, &MainWindow::goToPreviousVideo);
+    buttonSkipPrevious = new QPushButton(awesome->icon("fa-chevron-left"), "");
+    connect(buttonSkipPrevious, &QPushButton::clicked, this, &MainWindow::goToPreviousVideo);
 
-    buttonSkipNext.setText("Next");
-    connect(&buttonSkipNext, &QPushButton::clicked, this, &MainWindow::goToNextVideo);
+    buttonSkipNext = new QPushButton(awesome->icon("fa-chevron-right"), "");
+    connect(buttonSkipNext, &QPushButton::clicked, this, &MainWindow::goToNextVideo);
 
     // Connect media player state changes to update skip buttons
     connect(&mediaPlayer, &QMediaPlayer::stateChanged, [this](){
-        buttonSkipPrevious.setEnabled(mediaPlayer.position() > 2000); // Enable previous button if more than 2 seconds into the video
-        buttonSkipNext.setEnabled(true); // Always enable next button
+        buttonSkipPrevious->setEnabled(mediaPlayer.position() > 2000); // Enable previous button if more than 2 seconds into the video
+        buttonSkipNext->setEnabled(true); // Always enable next button
     });
 
     // Add the video widget, play/pause button, volume slider, position slider, and skip buttons to the layout
@@ -396,8 +398,8 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     layout->addWidget(&positionSlider);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
-    buttonLayout->addWidget(&buttonSkipPrevious);
-    buttonLayout->addWidget(&buttonSkipNext);
+    buttonLayout->addWidget(buttonSkipPrevious);
+    buttonLayout->addWidget(buttonSkipNext);
     layout->addLayout(buttonLayout);
 
     // Set the background color of the page to green
@@ -490,6 +492,9 @@ void MainWindow::SetupSettingsPage(QWidget *page){
     addSettingSwitch(layout, "Wi-Fi", "Enable Wi-Fi");
     addSettingSwitch(layout, "Bluetooth", "Enable Bluetooth");
     addSettingSwitch(layout, "Notifications", "Enable Notifications");
+    addSettingSwitch(layout, "Dark Mode", "Enabe Dark Mode");
+    addSettingSwitch(layout, "", "");
+    addSettingSwitch(layout, "", "");
 
     page->setLayout(layout);
 
