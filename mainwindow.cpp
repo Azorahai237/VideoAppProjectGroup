@@ -100,76 +100,65 @@ MainWindow::MainWindow(){
     setLayout(mainLayout);
 }
 
+
+
 void MainWindow::SetupFeedPage(QWidget *page) {
     QVBoxLayout *layout = new QVBoxLayout(page);
 
-    // Add any additional setup code for the page here
+    // Simulate video data (replace this with your actual data)
+    QStringList videoTitles = {"Video 1", "Video 2", "Video 3", "Video 4", "Video 5", "Video 6"};
+    QStringList sharers = {"UserA", "UserB", "UserC", "UserD", "UserE", "UserF"};
+
     QListWidget *feedListWidget = new QListWidget;
 
-    // Simulate video data (replace this with your actual data)
-    QStringList videoTitles = {"Video 1", "Video 2", "Video 3"};
-    QStringList sharers = {"UserA", "UserB", "UserC"};
-
-    // Populate the feed list with videos and sharers
     for (int i = 0; i < videoTitles.size(); ++i) {
-        // Create a list item
         QListWidgetItem *item = new QListWidgetItem(feedListWidget);
-        item->setSizeHint(QSize(250, 150));  // Set the size of each item
+        item->setSizeHint(QSize(250, 200));
 
-        // Create a custom widget for the list item
         QWidget *videoItemWidget = new QWidget(feedListWidget);
         videoItemWidget->setStyleSheet("background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 8px; margin: 5px;");
 
-        // Create a layout for the widget
         QVBoxLayout *itemLayout = new QVBoxLayout(videoItemWidget);
 
-        // Add video thumbnail (replace "path_to_thumbnail" with the actual path or URL)
         QLabel *thumbnailLabel = new QLabel(videoItemWidget);
         thumbnailLabel->setPixmap(QPixmap("path_to_thumbnail").scaled(150, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         thumbnailLabel->setAlignment(Qt::AlignCenter);
         itemLayout->addWidget(thumbnailLabel);
 
-        // Add video title label
         QLabel *titleLabel = new QLabel(videoTitles.at(i), videoItemWidget);
         titleLabel->setAlignment(Qt::AlignCenter);
         titleLabel->setStyleSheet("font-weight: bold; margin-top: 5px;");
         itemLayout->addWidget(titleLabel);
 
-        // Add sharer label
         QLabel *sharerLabel = new QLabel("Shared by: " + sharers.at(i), videoItemWidget);
         sharerLabel->setAlignment(Qt::AlignCenter);
         sharerLabel->setStyleSheet("font-style: italic; color: #888;");
         itemLayout->addWidget(sharerLabel);
 
-        // Set the widget for the list item
+        QMediaPlayer *player = new QMediaPlayer;
+        QVideoWidget *videoWidget = new QVideoWidget(videoItemWidget);
+        itemLayout->addWidget(videoWidget);
+
+        // Replace "path_to_video" with the actual path or URL
+        QMediaContent mediaContent(QUrl::fromLocalFile("qrc:/feedvids/Ownvids/Baby dog.mp4"));
+        player->setMedia(mediaContent);
+
+        connect(feedListWidget, &QListWidget::itemClicked, this, [=]() {
+            player->setVideoOutput(videoWidget);
+            player->setMedia(mediaContent);
+            player->play();
+        });
+
         feedListWidget->setItemWidget(item, videoItemWidget);
     }
 
-    // Connect the list item click event to a slot (unimplemented)
-    connect(feedListWidget, &QListWidget::itemClicked, this, [this](){ Q_UNUSED(this); });
+    connect(feedListWidget, &QListWidget::itemClicked, this, [this]() { Q_UNUSED(this); });
 
     layout->addWidget(feedListWidget);
 
-    // QHBoxLayout *buttonLayout = new QHBoxLayout;
-    // QPushButton *feedButton = new QPushButton("Feed");
-    // QPushButton *addVideoButton = new QPushButton("Add Video");
-    // QPushButton *galleryButton = new QPushButton("Gallery");
-    // QPushButton *profileButton = new QPushButton("Profile");
-
-    // connect(feedButton, &QPushButton::clicked, this, [this](){ goToPage(0); });
-    // connect(addVideoButton, &QPushButton::clicked, this, [this](){ goToPage(1); });
-    // connect(galleryButton, &QPushButton::clicked, this, [this](){ goToPage(2); });
-    // connect(profileButton, &QPushButton::clicked, this, [this](){ goToPage(3); });
-
-    // buttonLayout->addWidget(feedButton);
-    // buttonLayout->addWidget(addVideoButton);
-    // buttonLayout->addWidget(galleryButton);
-    // buttonLayout->addWidget(profileButton);
-
-    // layout->addWidget(feedListWidget);
-    // layout->addLayout(buttonLayout);
     page->setLayout(layout);
 }
+
 
 void MainWindow::SetupAddVideoPage(QWidget *page) {
     QVBoxLayout *layout = new QVBoxLayout(page);
@@ -335,7 +324,8 @@ void MainWindow::SetupProfilePage(QWidget *page){
     qDebug("Showing Profile section");
 }
 
-// mainwindow.cpp
+
+
 
 void MainWindow::SetupGalleryPage(QWidget *page) {
     QVBoxLayout *layout = new QVBoxLayout(page);
@@ -368,15 +358,23 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
         playPauseButton->setText(state == QMediaPlayer::PlayingState ? "Pause" : "Play");
     });
 
-    // Create and set up the volume slider
+    // Create and set up the volume slider with a green color
     volumeSlider.setOrientation(Qt::Horizontal);
     volumeSlider.setRange(0, 100); // Set the range from 0 to 100
     volumeSlider.setValue(50);     // Set the initial volume
+    volumeSlider.setStyleSheet("QSlider::groove:horizontal { background: #4CAF50; border: 1px solid #4CAF50; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
     connect(&volumeSlider, &QSlider::valueChanged, this, &MainWindow::updateVolume);
 
-    // Create and set up the position slider
+    // Create and set up the position slider with a green color
     positionSlider.setOrientation(Qt::Horizontal);
+    positionSlider.setStyleSheet("QSlider::groove:horizontal { background: #4CAF50; border: 1px solid #4CAF50; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
     connect(&positionSlider, &QSlider::sliderMoved, this, &MainWindow::setPosition);
+
+    // Connect position slider to media player
+    connect(&mediaPlayer, &QMediaPlayer::positionChanged, &positionSlider, &QSlider::setValue);
+
+    // Connect durationChanged signal to update position slider maximum value
+    connect(&mediaPlayer, &QMediaPlayer::durationChanged, &positionSlider, &QSlider::setMaximum);
 
     // Create and set up the skip buttons
     buttonSkipPrevious.setText("Previous");
@@ -402,9 +400,16 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     buttonLayout->addWidget(&buttonSkipNext);
     layout->addLayout(buttonLayout);
 
+    // Set the background color of the page to green
+    page->setStyleSheet("background-color: #D3D3D3;");
+
     // Set the layout for the page
     page->setLayout(layout);
 }
+
+
+
+
 
 void MainWindow::SetupLoginPage(QWidget *page){
     QWidget *container = new QWidget(page);
@@ -413,7 +418,7 @@ void MainWindow::SetupLoginPage(QWidget *page){
     QWidget *loginForm = new QWidget(container);
     loginForm->setObjectName("loginForm");
     loginForm->setStyleSheet("#loginForm {\
-                                background-color: white;\
+                                background-color: #f1f1f1;\
                                 border: 1px solid #ccc;\
                                 border-radius: 3px;\
                                 padding: 50px;\
@@ -421,30 +426,55 @@ void MainWindow::SetupLoginPage(QWidget *page){
 
     QVBoxLayout *loginFormVBox = new QVBoxLayout(loginForm);
 
-    QLabel *loginLabel = new QLabel("Login/Sign Up", loginForm);
+    QLabel *loginLabel = new QLabel("Sign In", loginForm);
     loginLabel->setStyleSheet("font-size: 28pt;");
 
-    QLabel *descriptionLabel = new QLabel("Make sure to choose a strong password", loginForm);
+    QLabel *descriptionLabel = new QLabel("Please enter your credentials to sign in", loginForm);
 
     QLineEdit *username = new QLineEdit(loginForm);
     username->setPlaceholderText("Username");
 
     QLineEdit *password = new QLineEdit(loginForm);
-    password->setPlaceholderText("password");
+    password->setPlaceholderText("Password");
 
-    QPushButton *loginButton = new QPushButton("Login/Sign Up", loginForm);
+    QCheckBox *rememberMe = new QCheckBox("Remember me", loginForm);
+
+    QPushButton *loginButton = new QPushButton("Sign In", loginForm);
+    loginButton->setStyleSheet("background-color: #4CAF50;\
+                                color: white;\
+                                padding: 14px 20px;\
+                                margin: 8px 0;\
+                                border: none;\
+                                border-radius: 4px;\
+                                cursor: pointer;\
+                                font-size: 16px;");
     connect(loginButton, &QPushButton::clicked, this, &MainWindow::login);
+
+    QLabel *forgotPassword = new QLabel("<a href=\"#\">Forgot your password?</a>", loginForm);
+    forgotPassword->setStyleSheet("font-size: 12pt;");
+
+    QLabel *signUp = new QLabel("<a href=\"#\">Don't have an account? Sign up</a>", loginForm);
+    signUp->setStyleSheet("font-size: 12pt;");
 
     loginFormVBox->addWidget(loginLabel);
     loginFormVBox->addWidget(descriptionLabel);
     loginFormVBox->addWidget(username);
     loginFormVBox->addWidget(password);
+    loginFormVBox->addWidget(rememberMe);
     loginFormVBox->addWidget(loginButton);
+    loginFormVBox->addWidget(forgotPassword);
+    loginFormVBox->addWidget(signUp);
 
     mainLayout->addWidget(loginForm, 1, Qt::AlignHCenter | Qt::AlignVCenter);
 
+    // Center the container widget on the page
+    QVBoxLayout *containerLayout = new QVBoxLayout(page);
+    containerLayout->addWidget(container, 1, Qt::AlignHCenter | Qt::AlignVCenter);
+
     qDebug("Showing Login page");
 }
+
+
 
 void MainWindow::SetupSettingsPage(QWidget *page){
     QVBoxLayout *layout = new QVBoxLayout(page);
