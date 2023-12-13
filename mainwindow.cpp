@@ -344,8 +344,6 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     // Set the playlist to the media player
     mediaPlayer.setPlaylist(playlist);
 
-    mediaPlayer.play();
-
     // Connect play/pause button to toggle playback
     QPushButton *playPauseButton = new QPushButton(awesome->icon("fa-play"), "", page);
     connect(playPauseButton, &QPushButton::clicked, [this](){
