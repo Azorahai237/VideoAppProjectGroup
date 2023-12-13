@@ -2,110 +2,109 @@
 
 
 
-
-
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-    createToolBar();
-    createMainContent();
-
-    setWindowTitle("Social Media App");
-
-    //setFixedSize(1280, 720);
-    setMinimumSize(480, 800); // Smallest standard mobile resolution
-    
-    mediaPlayer = new QMediaPlayer(this);
-    videoWidget = new QVideoWidget(this);
-    mediaPlayer->setVideoOutput(videoWidget);
-
-    createMediaPlayerControls();
-
-
-}
-
-void MainWindow::createToolBar() {
-    // Create a toolbar and set its appearance
-    navToolBar = new QToolBar(this);
-    navToolBar->setStyleSheet("QToolBar { border: 1px solid #a0a0a0; background-color: #f0f0f0; }");
-
-    // Create actions for each section with text
-    QAction *addVideosAction = new QAction("Add Videos", this);
-    QAction *feedAction = new QAction("Feed", this);
-    QAction *profileAction = new QAction("Profile", this);
-    QAction *viewOwnVideosAction = new QAction("View Own Videos", this);
-    QAction *homeAction = new QAction("Home", this);
-
-    // Connect actions to slots (you can implement these slots)
-    connect(addVideosAction, &QAction::triggered, this, &MainWindow::showAddVideos);
-    connect(feedAction, &QAction::triggered, this, &MainWindow::showFeed);
-    connect(profileAction, &QAction::triggered, this, &MainWindow::showProfile);
-    connect(viewOwnVideosAction, &QAction::triggered, this, &MainWindow::showOwnVideos);
-    connect(homeAction, &QAction::triggered, this, &MainWindow::showHome);
-
-    // Add actions and separators to the toolbar with spacing
-    navToolBar->addAction(addVideosAction);
-    navToolBar->addSeparator();
-    navToolBar->addAction(feedAction);
-    navToolBar->addSeparator();
-    navToolBar->addAction(profileAction);
-    navToolBar->addSeparator();
-    navToolBar->addAction(viewOwnVideosAction);
-    navToolBar->addSeparator();
-    navToolBar->addAction(homeAction);
-
-    // Add toolbar to the bottom of the main window
-    addToolBar(Qt::BottomToolBarArea, navToolBar);
-}
-
-
-void MainWindow::ToggleToolBar(bool b) {
-    if (navToolBar) {
-        navToolBar->setVisible(b);
+class RecordButton : public QPushButton {
+public:
+    RecordButton(QWidget* parent = nullptr) : QPushButton(parent), clickCount(0) {
+        setFixedSize(50, 50);  // Set the size as per your requirement
+        updateButtonColor();
+        connect(this, &QPushButton::clicked, this, &RecordButton::onClicked);
     }
+
+protected:
+    void paintEvent(QPaintEvent* event) override {
+        QPushButton::paintEvent(event);
+
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+
+        painter.setBrush(buttonColor);
+        painter.drawEllipse(rect().adjusted(5, 5, -5, -5));
+    }
+
+private slots:
+    void onClicked() {
+        clickCount++;
+        updateButtonColor();
+    }
+
+    void updateButtonColor() {
+        buttonColor = (clickCount % 2 == 0) ? Qt::white : Qt::red;
+        update();  // Trigger repainting to reflect the new state
+    }
+
+private:
+    int clickCount;
+    QColor buttonColor;
+};
+
+MainWindow::MainWindow(){
+    awesome = new fa::QtAwesome(this);
+    awesome->initFontAwesome();
+
+    // Create six pages
+    QWidget *pages[6];
+
+    for (int i = 0; i < 6; ++i) {
+        pages[i] = new QWidget;
+
+        // Call the respective setup function for each page
+        if (i == 0) {
+            SetupFeedPage(pages[i]);
+        } else if (i == 1) {
+            SetupAddVideoPage(pages[i]);
+        } else if (i == 2) {
+            SetupGalleryPage(pages[i]);
+        } else if (i == 3) {
+            SetupProfilePage(pages[i]);
+        } else if (i == 4) {
+            SetupLoginPage(pages[i]);
+        } else if (i == 5) {
+            SetupSettingsPage(pages[i]);
+         }
+
+        stackedWidget.addWidget(pages[i]);
+    }
+
+    // Connect buttons to navigate through pages
+
+    buttonPage1 = new QPushButton(awesome->icon("fa-house"), "Feed");
+    buttonPage2 = new QPushButton(awesome->icon("fa-video"), "Add Video");
+    buttonPage3 = new QPushButton(awesome->icon("fa-image"), "Gallery");
+    buttonPage4 = new QPushButton(awesome->icon("fa-circle-user"), "Profile");
+    buttonPage5 = new QPushButton(awesome->icon("fa-right-to-bracket"), "Login");
+
+    buttonPage4->setVisible(false);
+
+    connect(buttonPage1, &QPushButton::clicked, this, [this](){ goToPage(0); });
+    connect(buttonPage2, &QPushButton::clicked, this, [this](){ goToPage(1); });
+    connect(buttonPage3, &QPushButton::clicked, this, [this](){ goToPage(2); });
+    connect(buttonPage4, &QPushButton::clicked, this, [this](){ goToPage(3); });
+    connect(buttonPage5, &QPushButton::clicked, this, [this](){ goToPage(4); });
+    // connect(&buttonPage5, &QPushButton::clicked, this, [this](){ goToPage(4); });
+    // connect(&buttonPage6, &QPushButton::clicked, this, [this](){ goToPage(5); });
+
+    // Create a layout for the main window
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(&stackedWidget);
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+
+    buttonLayout->addWidget(buttonPage1);
+    buttonLayout->addWidget(buttonPage2);
+    buttonLayout->addWidget(buttonPage3);
+    buttonLayout->addWidget(buttonPage4);
+    buttonLayout->addWidget(buttonPage5);
+    // mainLayout->addWidget(&buttonPage5);
+    // mainLayout->addWidget(&buttonPage6);
+    mainLayout->addLayout(buttonLayout);
+    setLayout(mainLayout);
 }
-void MainWindow::showVideo() {
 
-//     // Set the media content to the provided video file path
-//     mediaPlayer->setMedia(QUrl::fromLocalFile("videos/c.mp4"));
+void MainWindow::SetupFeedPage(QWidget *page) {
+    QVBoxLayout *layout = new QVBoxLayout(page);
 
-//     // Play the video
-//     mediaPlayer->play();
-}
-
-
-void MainWindow::createMainContent() {
-    // Create a central widget with a simple label to represent the main content
-    QWidget *centralWidget = new QWidget(this);
-    setCentralWidget(centralWidget);
-
-    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
-
-    QLabel *contentLabel = new QLabel("Main Content Goes Here");
-    contentLabel->setAlignment(Qt::AlignCenter);
-    layout->addWidget(contentLabel);
-}
-
-
-
-
-void MainWindow::handleMediaStateChanged(){
-    qDebug("Media change");
-}
-
-void MainWindow::handleMediaStatusChanged(){
-    qDebug("Media change");
-}
-
-void MainWindow::showAddVideos() {
-    // Implement the logic to show the "Add Videos" section
-    qDebug("Showing Add Videos section");
-}
-
-void MainWindow::showFeed() {
-
-    // Implement the logic to show the "Feed" section
-    // Create a list widget for displaying videos in the feed
-    QListWidget *feedListWidget = new QListWidget(this);
-    setCentralWidget(feedListWidget);
+    // Add any additional setup code for the page here
+    QListWidget *feedListWidget = new QListWidget;
 
     // Simulate video data (replace this with your actual data)
     QStringList videoTitles = {"Video 1", "Video 2", "Video 3"};
@@ -113,29 +112,28 @@ void MainWindow::showFeed() {
 
     // Populate the feed list with videos and sharers
     for (int i = 0; i < videoTitles.size(); ++i) {
-
         // Create a list item
         QListWidgetItem *item = new QListWidgetItem(feedListWidget);
         item->setSizeHint(QSize(250, 150));  // Set the size of each item
 
-         // Create a custom widget for the list item
+        // Create a custom widget for the list item
         QWidget *videoItemWidget = new QWidget(feedListWidget);
         videoItemWidget->setStyleSheet("background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 8px; margin: 5px;");
 
-         // Create a layout for the widget
-         QVBoxLayout *itemLayout = new QVBoxLayout(videoItemWidget);
+        // Create a layout for the widget
+        QVBoxLayout *itemLayout = new QVBoxLayout(videoItemWidget);
 
-         // Add video thumbnail (replace "path_to_thumbnail" with the actual path or URL)
-         QLabel *thumbnailLabel = new QLabel(videoItemWidget);
-         thumbnailLabel->setPixmap(QPixmap("path_to_thumbnail").scaled(150, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-         thumbnailLabel->setAlignment(Qt::AlignCenter);
-         itemLayout->addWidget(thumbnailLabel);
+        // Add video thumbnail (replace "path_to_thumbnail" with the actual path or URL)
+        QLabel *thumbnailLabel = new QLabel(videoItemWidget);
+        thumbnailLabel->setPixmap(QPixmap("path_to_thumbnail").scaled(150, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        thumbnailLabel->setAlignment(Qt::AlignCenter);
+        itemLayout->addWidget(thumbnailLabel);
 
         // Add video title label
         QLabel *titleLabel = new QLabel(videoTitles.at(i), videoItemWidget);
         titleLabel->setAlignment(Qt::AlignCenter);
         titleLabel->setStyleSheet("font-weight: bold; margin-top: 5px;");
-         itemLayout->addWidget(titleLabel);
+        itemLayout->addWidget(titleLabel);
 
         // Add sharer label
         QLabel *sharerLabel = new QLabel("Shared by: " + sharers.at(i), videoItemWidget);
@@ -145,53 +143,89 @@ void MainWindow::showFeed() {
 
         // Set the widget for the list item
         feedListWidget->setItemWidget(item, videoItemWidget);
-
-        }
+    }
 
     // Connect the list item click event to a slot (unimplemented)
     connect(feedListWidget, &QListWidget::itemClicked, this, [this](){ Q_UNUSED(this); });
 
-    qDebug("Showing Feed section");
+    layout->addWidget(feedListWidget);
 
+    // QHBoxLayout *buttonLayout = new QHBoxLayout;
+    // QPushButton *feedButton = new QPushButton("Feed");
+    // QPushButton *addVideoButton = new QPushButton("Add Video");
+    // QPushButton *galleryButton = new QPushButton("Gallery");
+    // QPushButton *profileButton = new QPushButton("Profile");
+
+    // connect(feedButton, &QPushButton::clicked, this, [this](){ goToPage(0); });
+    // connect(addVideoButton, &QPushButton::clicked, this, [this](){ goToPage(1); });
+    // connect(galleryButton, &QPushButton::clicked, this, [this](){ goToPage(2); });
+    // connect(profileButton, &QPushButton::clicked, this, [this](){ goToPage(3); });
+
+    // buttonLayout->addWidget(feedButton);
+    // buttonLayout->addWidget(addVideoButton);
+    // buttonLayout->addWidget(galleryButton);
+    // buttonLayout->addWidget(profileButton);
+
+    // layout->addWidget(feedListWidget);
+    // layout->addLayout(buttonLayout);
+    page->setLayout(layout);
 }
 
-void MainWindow::AttemptLogin(){
-    ToggleToolBar(true);
+void MainWindow::SetupAddVideoPage(QWidget *page) {
+    QVBoxLayout *layout = new QVBoxLayout(page);
+
+    // Create camera
+    QCamera *camera = new QCamera(this);
+
+    // Create viewfinder to display the camera feed
+    QCameraViewfinder *viewfinder = new QCameraViewfinder(this);
+    viewfinder->setMinimumSize(640, 480); // Set the size as per your requirement
+
+    // Set the camera for the viewfinder
+    camera->setViewfinder(viewfinder);
+
+    // Create a custom round button for recording
+    RecordButton *recordButton = new RecordButton(this);
 
 
 
+    // Create a button to freeze/unfreeze the screen
+    QPushButton *freezeButton = new QPushButton("Start Camera / Stop Camera", this);
+    connect(freezeButton, &QPushButton::clicked, this, [camera, viewfinder]() {
+        // Toggle between freezing and unfreezing the screen
+        if (camera->state() == QCamera::ActiveState) {
+            camera->stop();
+            viewfinder->setEnabled(false);
+        } else {
+            camera->start();
+            viewfinder->setEnabled(true);
+        }
+    });
 
+    // Use a vertical layout to arrange camera components
+    QVBoxLayout *cameraLayout = new QVBoxLayout;
+    cameraLayout->addWidget(viewfinder);
+    cameraLayout->addWidget(recordButton, 0, Qt::AlignHCenter);  // Center the record button
 
+    // Add camera layout and buttons to the main layout
+    layout->addLayout(cameraLayout);
+    layout->addWidget(freezeButton);
+
+    // Set the layout for the page
+    page->setLayout(layout);
+
+    // Set the camera as a member variable if you need to access it later
+    // this->camera = camera;
 }
 
-void MainWindow::ShowLogin(){
-        QLabel *titleLabel = new QLabel("Login Page", this);
-        QLineEdit *usernameLineEdit = new QLineEdit(this);
-        QLineEdit *passwordLineEdit = new QLineEdit(this);
-        QPushButton *loginButton = new QPushButton("Login", this);
-        titleLabel->setAlignment(Qt::AlignCenter);
-        usernameLineEdit->setPlaceholderText("Username");
-        passwordLineEdit->setPlaceholderText("Password");
-        connect(loginButton, &QPushButton::clicked, this, &MainWindow::AttemptLogin);
-
-        QWidget *LoginWidget = new QWidget(this);
-        QVBoxLayout *layout = new QVBoxLayout(LoginWidget);
-        layout->addWidget(titleLabel);
-        layout->addWidget(usernameLineEdit);
-        layout->addWidget(passwordLineEdit);
-        layout->addWidget(loginButton);
-
-        navToolBar->setVisible(true);
-        this->setCentralWidget(LoginWidget);
 
 
-}
 
-void MainWindow::showProfile() {
-
+void MainWindow::SetupProfilePage(QWidget *page){
+    QVBoxLayout *layout = new QVBoxLayout(page);
     // 1st Layer: Top left - Button to go to settings
-    QPushButton *settingsButton = new QPushButton("Settings", this);
-    connect(settingsButton, &QPushButton::clicked, [this](){ Q_UNUSED(this); });
+    QPushButton *settingsButton = new QPushButton(awesome->icon("fa-gear"), "Settings", this);
+    connect(settingsButton, &QPushButton::clicked, this, [this](){ goToPage(5); });
 
     // 1st Layer: Top center - Large text "Profile"
     QLabel *profileLabel = new QLabel("Your Profile", this);
@@ -199,8 +233,8 @@ void MainWindow::showProfile() {
     profileLabel->setAlignment(Qt::AlignCenter);
 
     // 1st Layer: Top right - Button to log out
-    QPushButton *logoutButton = new QPushButton("Logout", this);
-    connect(logoutButton, &QPushButton::clicked, [this](){ Q_UNUSED(this); });
+    QPushButton *logoutButton = new QPushButton(awesome->icon("fa-right-from-bracket"), "Logout", this);
+    connect(logoutButton, &QPushButton::clicked, this, &MainWindow::logout);
 
     // Create a horizontal layout for the 1st layer
     QHBoxLayout *layer1Layout = new QHBoxLayout();
@@ -279,97 +313,230 @@ void MainWindow::showProfile() {
     layer5Layout->setSpacing(10);
 
     // Create the profile widget
-    profileWidget = new QWidget(this);
+
 
     // Set the layout for the profile widget as a vertical layout
-    QVBoxLayout *profileLayout = new QVBoxLayout(profileWidget);
-    profileLayout->addLayout(layer1Layout);
-    profileLayout->addStretch(1);
-    profileLayout->addLayout(layer2Layout);
-    profileLayout->addLayout(layer3Layout);
-    profileLayout->addLayout(layer4Layout);
-    profileLayout->addStretch(2);
-    profileLayout->addLayout(layer5Layout);
+
+    layout->addLayout(layer1Layout);
+    layout->addStretch(1);
+    layout->addLayout(layer2Layout);
+    layout->addLayout(layer3Layout);
+    layout->addLayout(layer4Layout);
+    layout->addStretch(2);
+    layout->addLayout(layer5Layout);
     layer5Layout->setAlignment(Qt::AlignHCenter);
 
 
-    // Ensure the navigation toolbar is visible at the bottom
-    navToolBar->setVisible(true);
+
 
     // Set the profile widget as the central widget
-    setCentralWidget(profileWidget);
+    page->setLayout(layout);
 
     qDebug("Showing Profile section");
 }
 
+// mainwindow.cpp
 
-void MainWindow::createMediaPlayerControls() {
-    // Create controls for the media player
-    QPushButton *playButton = new QPushButton("Play");
-    QPushButton *pauseButton = new QPushButton("Pause");
-    QSlider *volumeSlider = new QSlider(Qt::Horizontal);
-    volumeSlider->setRange(0, 100);
-    volumeSlider->setValue(50);
+void MainWindow::SetupGalleryPage(QWidget *page) {
+    QVBoxLayout *layout = new QVBoxLayout(page);
 
-    // Connect buttons to slots
-    connect(playButton, &QPushButton::clicked, this, &MainWindow::playVideo);
-    connect(pauseButton, &QPushButton::clicked, this, &MainWindow::pauseVideo);
-    connect(volumeSlider, &QSlider::valueChanged, this, &MainWindow::setVolume);
+    // Set up video player
+    mediaPlayer.setVideoOutput(&videoWidget);
 
-    // Layout for media player controls
-    QHBoxLayout *mediaPlayerControlsLayout = new QHBoxLayout();
-    mediaPlayerControlsLayout->addWidget(playButton);
-    mediaPlayerControlsLayout->addWidget(pauseButton);
-    mediaPlayerControlsLayout->addWidget(volumeSlider);
+    // Create a media playlist and add video files to it
+    QMediaPlaylist *playlist = new QMediaPlaylist;
+    playlist->addMedia(QUrl("qrc:/videos/videos/c.mp4"));
+    playlist->addMedia(QUrl("qrc:/videos/videos/e.mp4"));
+    playlist->addMedia(QUrl("qrc:/videos/videos/g.mp4"));
+    // Add more videos as needed
+    playlist->setPlaybackMode(QMediaPlaylist::Loop);
 
-    // Add video widget and controls to the central layout
-    QVBoxLayout *centralLayout = dynamic_cast<QVBoxLayout*>(centralWidget()->layout());
-    if (centralLayout) {
-        centralLayout->addWidget(videoWidget);
-        centralLayout->addLayout(mediaPlayerControlsLayout);
+    // Set the playlist to the media player
+    mediaPlayer.setPlaylist(playlist);
+
+    mediaPlayer.play();
+
+    // Connect play/pause button to toggle playback
+    QPushButton *playPauseButton = new QPushButton(awesome->icon("fa-play"), "", page);
+    connect(playPauseButton, &QPushButton::clicked, [this](){
+        if (mediaPlayer.state() == QMediaPlayer::PlayingState)
+            mediaPlayer.pause();
+        else
+            mediaPlayer.play();
+    });
+
+    // Connect media player state changes to update button text
+    connect(&mediaPlayer, &QMediaPlayer::stateChanged, [playPauseButton, this](QMediaPlayer::State state){
+        playPauseButton->setIcon(state == QMediaPlayer::PlayingState ? (awesome->icon("fa-pause"))  : (awesome->icon("fa-play")));
+    });
+
+    // Create and set up the volume slider
+    volumeSlider.setOrientation(Qt::Horizontal);
+    volumeSlider.setRange(0, 100); // Set the range from 0 to 100
+    volumeSlider.setValue(50);     // Set the initial volume
+    connect(&volumeSlider, &QSlider::valueChanged, this, &MainWindow::updateVolume);
+
+    // Create and set up the position slider
+    positionSlider.setOrientation(Qt::Horizontal);
+    connect(&positionSlider, &QSlider::sliderMoved, this, &MainWindow::setPosition);
+
+    // Create and set up the skip buttons
+    buttonSkipPrevious = new QPushButton(awesome->icon("fa-chevron-left"), "");
+    connect(buttonSkipPrevious, &QPushButton::clicked, this, &MainWindow::goToPreviousVideo);
+
+    buttonSkipNext = new QPushButton(awesome->icon("fa-chevron-right"), "");
+    connect(buttonSkipNext, &QPushButton::clicked, this, &MainWindow::goToNextVideo);
+
+    // Connect media player state changes to update skip buttons
+    connect(&mediaPlayer, &QMediaPlayer::stateChanged, [this](){
+        buttonSkipPrevious->setEnabled(mediaPlayer.position() > 2000); // Enable previous button if more than 2 seconds into the video
+        buttonSkipNext->setEnabled(true); // Always enable next button
+    });
+
+    // Add the video widget, play/pause button, volume slider, position slider, and skip buttons to the layout
+    layout->addWidget(&videoWidget);
+    layout->addWidget(playPauseButton);
+    layout->addWidget(&volumeSlider);
+    layout->addWidget(&positionSlider);
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->addWidget(buttonSkipPrevious);
+    buttonLayout->addWidget(buttonSkipNext);
+    layout->addLayout(buttonLayout);
+
+    // Set the layout for the page
+    page->setLayout(layout);
+}
+
+void MainWindow::SetupLoginPage(QWidget *page){
+    QWidget *container = new QWidget(page);
+    QVBoxLayout *mainLayout = new QVBoxLayout(container);
+
+    QWidget *loginForm = new QWidget(container);
+    loginForm->setObjectName("loginForm");
+    loginForm->setStyleSheet("#loginForm {\
+                                background-color: white;\
+                                border: 1px solid #ccc;\
+                                border-radius: 3px;\
+                                padding: 50px;\
+                            }");
+
+    QVBoxLayout *loginFormVBox = new QVBoxLayout(loginForm);
+
+    QLabel *loginLabel = new QLabel("Login/Sign Up", loginForm);
+    loginLabel->setStyleSheet("font-size: 28pt;");
+
+    QLabel *descriptionLabel = new QLabel("Make sure to choose a strong password", loginForm);
+
+    QLineEdit *username = new QLineEdit(loginForm);
+    username->setPlaceholderText("Username");
+
+    QLineEdit *password = new QLineEdit(loginForm);
+    password->setPlaceholderText("password");
+
+    QPushButton *loginButton = new QPushButton("Login/Sign Up", loginForm);
+    connect(loginButton, &QPushButton::clicked, this, &MainWindow::login);
+
+    loginFormVBox->addWidget(loginLabel);
+    loginFormVBox->addWidget(descriptionLabel);
+    loginFormVBox->addWidget(username);
+    loginFormVBox->addWidget(password);
+    loginFormVBox->addWidget(loginButton);
+
+    mainLayout->addWidget(loginForm, 1, Qt::AlignHCenter | Qt::AlignVCenter);
+
+    qDebug("Showing Login page");
+}
+
+void MainWindow::SetupSettingsPage(QWidget *page){
+    QVBoxLayout *layout = new QVBoxLayout(page);
+
+    QPushButton *backButton = new QPushButton(awesome->icon("fa-chevron-left"), "Back", page);
+    connect(backButton, &QPushButton::clicked, this, [this](){ goToPage(3); });
+    layout->addWidget(backButton);
+
+    QLabel *settingsLabel = new QLabel("Settings", page);
+    settingsLabel->setStyleSheet("font-size: 28pt;");
+    layout->addWidget(settingsLabel);
+
+    addSettingSwitch(layout, "Wi-Fi", "Enable Wi-Fi");
+    addSettingSwitch(layout, "Bluetooth", "Enable Bluetooth");
+    addSettingSwitch(layout, "Notifications", "Enable Notifications");
+    addSettingSwitch(layout, "Dark Mode", "Enabe Dark Mode");
+    addSettingSwitch(layout, "", "");
+    addSettingSwitch(layout, "", "");
+
+    page->setLayout(layout);
+
+    qDebug("Showing Settings page");
+}
+
+void MainWindow::addSettingSwitch(QVBoxLayout *layout, const QString &settingName, const QString &settingDescription) {
+    QWidget *settingWidget = new QWidget;
+    QHBoxLayout *settingLayout = new QHBoxLayout(settingWidget);
+
+    QLabel *settingLabel = new QLabel(settingDescription, settingWidget);
+
+    QCheckBox *settingSwitch = new QCheckBox(settingWidget);
+
+    settingLayout->addWidget(settingLabel);
+    settingLayout->addWidget(settingSwitch);
+
+    layout->addWidget(settingWidget);
+}
+
+void MainWindow::login() {
+    buttonPage4->setVisible(true);
+    buttonPage5->setVisible(false);
+    goToPage(3);
+}
+
+void MainWindow::logout() {
+    buttonPage4->setVisible(false);
+    buttonPage5->setVisible(true);
+    goToPage(4);
+}
+
+void MainWindow::goToPreviousVideo() {
+    int currentIndex = mediaPlayer.playlist()->currentIndex();
+    if (currentIndex > 0) {
+        mediaPlayer.playlist()->previous();
     }
 }
 
-void MainWindow::playVideo() {
-    mediaPlayer->play();
+void MainWindow::goToNextVideo() {
+    int currentIndex = mediaPlayer.playlist()->currentIndex();
+    if (currentIndex < mediaPlayer.playlist()->mediaCount() - 1) {
+        mediaPlayer.playlist()->next();
+    }
 }
 
-void MainWindow::pauseVideo() {
-    mediaPlayer->pause();
+void MainWindow::updateVolume(int volume) {
+    mediaPlayer.setVolume(volume);
 }
 
-void MainWindow::setVolume(int volume) {
-    mediaPlayer->setVolume(volume);
+void MainWindow::setPosition(int position) {
+    mediaPlayer.setPosition(position);
 }
 
 
 
-void MainWindow::showOwnVideos() {
-    // Implement the logic to show the "View Own Videos" section
-    qDebug("Showing View Own Videos section");
-    QString FileName = QFileDialog::getOpenFileName(this,tr("Select Video File"),"",tr("MP4 Files (*.mp4);;All Files (*)"));
 
-    QWidget *centralWidget = new QWidget(this);
-    setCentralWidget(centralWidget);
-
-    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
-
-    // Create a video widget
-    videoWidget = new QVideoWidget(this);
-    layout->addWidget(videoWidget);
-
-    // Create a video player
-    mediaPlayer = new QMediaPlayer(this);
-    mediaPlayer->setVideoOutput(videoWidget);
-
-
-    mediaPlayer->setMedia(QUrl(FileName));
-    mediaPlayer->play();
-
+void MainWindow::goToPreviousPage() {
+    int currentIndex = stackedWidget.currentIndex();
+    if (currentIndex > 0) {
+        stackedWidget.setCurrentIndex(currentIndex - 1);
+    }
 }
 
-void MainWindow::showHome() {
-    // Implement the logic to show the "Home" section
-    qDebug("Showing Home section");
+void MainWindow::goToNextPage() {
+    int currentIndex = stackedWidget.currentIndex();
+    if (currentIndex < stackedWidget.count() - 1) {
+        stackedWidget.setCurrentIndex(currentIndex + 1);
+    }
+}
+
+void MainWindow::goToPage(int index) {
+    stackedWidget.setCurrentIndex(index);
 }
 

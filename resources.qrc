@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/videos">
+        <file>videos/a.MOV</file>
+        <file>videos/a.png</file>
+        <file>videos/a.wmv</file>
+        <file>videos/b.MOV</file>
+        <file>videos/b.png</file>
+        <file>videos/b.wmv</file>
+        <file>videos/c.mp4</file>
+        <file>videos/c.png</file>
+        <file>videos/c.wmv</file>
+        <file>videos/d.MOV</file>
+        <file>videos/d.png</file>
+        <file>videos/d.wmv</file>
+        <file>videos/e.mp4</file>
+        <file>videos/e.png</file>
+        <file>videos/e.wmv</file>
+        <file>videos/f.mp4</file>
+        <file>videos/f.png</file>
+        <file>videos/f.wmv</file>
+        <file>videos/g.mp4</file>
+        <file>videos/g.png</file>
+        <file>videos/g.wmv</file>
+    </qresource>
+</RCC>
