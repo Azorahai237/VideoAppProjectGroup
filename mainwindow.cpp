@@ -421,28 +421,34 @@ void MainWindow::SetupLoginPage(QWidget *page){
                                 background-color: #f1f1f1;\
                                 border: 1px solid #ccc;\
                                 border-radius: 3px;\
-                                padding: 50px;\
                             }");
 
     QVBoxLayout *loginFormVBox = new QVBoxLayout(loginForm);
+    loginFormVBox->setContentsMargins(40, 30, 40, 30);
 
     QLabel *loginLabel = new QLabel("Sign In", loginForm);
-    loginLabel->setStyleSheet("font-size: 28pt;");
+    loginLabel->setStyleSheet("font-size: 28pt;\
+                               padding: 10px;\
+                              ");
 
     QLabel *descriptionLabel = new QLabel("Please enter your credentials to sign in", loginForm);
+    descriptionLabel->setStyleSheet("padding: 10px;");
 
     QLineEdit *username = new QLineEdit(loginForm);
     username->setPlaceholderText("Username");
+    username->setStyleSheet("padding: 10px;");
 
     QLineEdit *password = new QLineEdit(loginForm);
     password->setPlaceholderText("Password");
+    password->setStyleSheet("padding: 10px;");
 
     QCheckBox *rememberMe = new QCheckBox("Remember me", loginForm);
+    rememberMe->setStyleSheet("padding: 10px;");
 
     QPushButton *loginButton = new QPushButton("Sign In", loginForm);
     loginButton->setStyleSheet("background-color: #4CAF50;\
                                 color: white;\
-                                padding: 14px 20px;\
+                                padding: 10px;\
                                 margin: 8px 0;\
                                 border: none;\
                                 border-radius: 4px;\
@@ -450,11 +456,13 @@ void MainWindow::SetupLoginPage(QWidget *page){
                                 font-size: 16px;");
     connect(loginButton, &QPushButton::clicked, this, &MainWindow::login);
 
-    QLabel *forgotPassword = new QLabel("<a href=\"#\">Forgot your password?</a>", loginForm);
-    forgotPassword->setStyleSheet("font-size: 12pt;");
+    QLabel *forgotPassword = new QLabel("Forgot your password? <a href=\"#\">Reset Password</a>", loginForm);
+    forgotPassword->setStyleSheet("font-size: 10pt;\
+                                   padding: 10px;");
 
-    QLabel *signUp = new QLabel("<a href=\"#\">Don't have an account? Sign up</a>", loginForm);
-    signUp->setStyleSheet("font-size: 12pt;");
+    QLabel *signUp = new QLabel("Don't have an account? <a href=\"#\">Sign up</a>", loginForm);
+    signUp->setStyleSheet("font-size: 10pt;\
+                           padding: 10px;");
 
     loginFormVBox->addWidget(loginLabel);
     loginFormVBox->addWidget(descriptionLabel);
