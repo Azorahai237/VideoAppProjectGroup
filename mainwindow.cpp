@@ -325,8 +325,6 @@ void MainWindow::SetupProfilePage(QWidget *page){
 }
 
 
-
-
 void MainWindow::SetupGalleryPage(QWidget *page) {
     QVBoxLayout *layout = new QVBoxLayout(page);
 
@@ -343,6 +341,39 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
 
     // Set the playlist to the media player
     mediaPlayer.setPlaylist(playlist);
+
+    // Set up graphics scene for video and text
+    QGraphicsScene* scene = new QGraphicsScene;
+
+    // Set up video item
+    QGraphicsVideoItem* videoItem = new QGraphicsVideoItem;
+    videoItem->setSize(QSizeF(800, 600));
+    QGraphicsTextItem* textItem = new QGraphicsTextItem("Your Text Here");
+    scene->addItem(videoItem);
+    scene->addItem(textItem);
+
+
+    // Set up graphics view and set scene
+    QGraphicsView* graphicsView = new QGraphicsView(scene);
+    graphicsView->setRenderHint(QPainter::Antialiasing, true);
+
+
+    // Connect media player to video item
+    mediaPlayer.setVideoOutput(videoItem);
+
+    // Set up text item
+    QFont font("Arial", 20);
+    textItem->setFont(font);
+    textItem->setDefaultTextColor(QColor(Qt::white));
+    textItem->setPos(300, 480);
+
+    connect(&mediaPlayer, &QMediaPlayer::stateChanged, [textItem, this](QMediaPlayer::State state){
+        if (state == QMediaPlayer::PlayingState) {
+            textItem->setPlainText("Video is playing!");
+        } else {
+            textItem->setPlainText("");
+        }
+    });
 
     // Connect play/pause button to toggle playback
     QPushButton *playPauseButton = new QPushButton(awesome->icon("fa-play"), "", page);
@@ -367,7 +398,6 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     volumeSlider.setValue(50);
     volumeSlider.setStyleSheet("QSlider::groove:horizontal { background: #4CAF50; border: 1px solid #4CAF50; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
     connect(&volumeSlider, &QSlider::valueChanged, this, &MainWindow::updateVolume);
-
 
     // Create and set up the position slider with a green color
     QLabel *positionLabel = new QLabel("Position", page);  // Smaller label text
@@ -406,7 +436,7 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     });
 
     // Add the video widget, play/pause button, volume slider, position slider, and skip buttons to the layout
-    layout->addWidget(&videoWidget);
+    layout->addWidget(graphicsView);
     layout->addWidget(playPauseButton);
     layout->addWidget(volumeLabel);
     layout->addWidget(&volumeSlider);
@@ -424,6 +454,9 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     // Set the layout for the page
     page->setLayout(layout);
 }
+
+
+
 
 
 
