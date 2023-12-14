@@ -348,7 +348,7 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     // Set up video item
     QGraphicsVideoItem* videoItem = new QGraphicsVideoItem;
     videoItem->setSize(QSizeF(800, 600));
-    QGraphicsTextItem* textItem = new QGraphicsTextItem("Your Text Here");
+    QGraphicsTextItem* textItem = new QGraphicsTextItem("");
     scene->addItem(videoItem);
     scene->addItem(textItem);
 
@@ -365,11 +365,11 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     QFont font("Arial", 20);
     textItem->setFont(font);
     textItem->setDefaultTextColor(QColor(Qt::white));
-    textItem->setPos(300, 480);
+    textItem->setPos(280, 480);
 
     connect(&mediaPlayer, &QMediaPlayer::stateChanged, [textItem, this](QMediaPlayer::State state){
         if (state == QMediaPlayer::PlayingState) {
-            textItem->setPlainText("Video is playing!");
+            textItem->setPlainText("( Background audio )");
         } else {
             textItem->setPlainText("");
         }
