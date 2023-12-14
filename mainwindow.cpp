@@ -325,8 +325,6 @@ void MainWindow::SetupProfilePage(QWidget *page){
 }
 
 
-
-
 void MainWindow::SetupGalleryPage(QWidget *page) {
     QVBoxLayout *layout = new QVBoxLayout(page);
 
@@ -343,6 +341,39 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
 
     // Set the playlist to the media player
     mediaPlayer.setPlaylist(playlist);
+
+    // Set up graphics scene for video and text
+    QGraphicsScene* scene = new QGraphicsScene;
+
+    // Set up video item
+    QGraphicsVideoItem* videoItem = new QGraphicsVideoItem;
+    videoItem->setSize(QSizeF(800, 600));
+    QGraphicsTextItem* textItem = new QGraphicsTextItem("");
+    scene->addItem(videoItem);
+    scene->addItem(textItem);
+
+
+    // Set up graphics view and set scene
+    QGraphicsView* graphicsView = new QGraphicsView(scene);
+    graphicsView->setRenderHint(QPainter::Antialiasing, true);
+
+
+    // Connect media player to video item
+    mediaPlayer.setVideoOutput(videoItem);
+
+    // Set up text item
+    QFont font("Arial", 20);
+    textItem->setFont(font);
+    textItem->setDefaultTextColor(QColor(Qt::white));
+    textItem->setPos(280, 480);
+
+    connect(&mediaPlayer, &QMediaPlayer::stateChanged, [textItem, this](QMediaPlayer::State state){
+        if (state == QMediaPlayer::PlayingState) {
+            textItem->setPlainText("( Background audio )");
+        } else {
+            textItem->setPlainText("");
+        }
+    });
 
     // Connect play/pause button to toggle playback
     QPushButton *playPauseButton = new QPushButton(awesome->icon("fa-play"), "", page);
@@ -367,7 +398,6 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     volumeSlider.setValue(50);
     volumeSlider.setStyleSheet("QSlider::groove:horizontal { background: #4CAF50; border: 1px solid #4CAF50; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
     connect(&volumeSlider, &QSlider::valueChanged, this, &MainWindow::updateVolume);
-
 
     // Create and set up the position slider with a green color
     QLabel *positionLabel = new QLabel("Position", page);  // Smaller label text
@@ -406,7 +436,7 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     });
 
     // Add the video widget, play/pause button, volume slider, position slider, and skip buttons to the layout
-    layout->addWidget(&videoWidget);
+    layout->addWidget(graphicsView);
     layout->addWidget(playPauseButton);
     layout->addWidget(volumeLabel);
     layout->addWidget(&volumeSlider);
@@ -429,6 +459,9 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
 
 
 
+
+
+
 void MainWindow::SetupLoginPage(QWidget *page){
     QWidget *container = new QWidget(page);
     QVBoxLayout *mainLayout = new QVBoxLayout(container);
@@ -439,28 +472,34 @@ void MainWindow::SetupLoginPage(QWidget *page){
                                 background-color: #f1f1f1;\
                                 border: 1px solid #ccc;\
                                 border-radius: 3px;\
-                                padding: 50px;\
                             }");
 
     QVBoxLayout *loginFormVBox = new QVBoxLayout(loginForm);
+    loginFormVBox->setContentsMargins(40, 30, 40, 30);
 
     QLabel *loginLabel = new QLabel("Sign In", loginForm);
-    loginLabel->setStyleSheet("font-size: 28pt;");
+    loginLabel->setStyleSheet("font-size: 28pt;\
+                               padding: 10px;\
+                              ");
 
     QLabel *descriptionLabel = new QLabel("Please enter your credentials to sign in", loginForm);
+    descriptionLabel->setStyleSheet("padding: 10px;");
 
     QLineEdit *username = new QLineEdit(loginForm);
     username->setPlaceholderText("Username");
+    username->setStyleSheet("padding: 10px;");
 
     QLineEdit *password = new QLineEdit(loginForm);
     password->setPlaceholderText("Password");
+    password->setStyleSheet("padding: 10px;");
 
     QCheckBox *rememberMe = new QCheckBox("Remember me", loginForm);
+    rememberMe->setStyleSheet("padding: 10px;");
 
     QPushButton *loginButton = new QPushButton("Sign In", loginForm);
     loginButton->setStyleSheet("background-color: #4CAF50;\
                                 color: white;\
-                                padding: 14px 20px;\
+                                padding: 10px;\
                                 margin: 8px 0;\
                                 border: none;\
                                 border-radius: 4px;\
@@ -468,11 +507,13 @@ void MainWindow::SetupLoginPage(QWidget *page){
                                 font-size: 16px;");
     connect(loginButton, &QPushButton::clicked, this, &MainWindow::login);
 
-    QLabel *forgotPassword = new QLabel("<a href=\"#\">Forgot your password?</a>", loginForm);
-    forgotPassword->setStyleSheet("font-size: 12pt;");
+    QLabel *forgotPassword = new QLabel("Forgot your password? <a href=\"#\">Reset Password</a>", loginForm);
+    forgotPassword->setStyleSheet("font-size: 10pt;\
+                                   padding: 10px;");
 
-    QLabel *signUp = new QLabel("<a href=\"#\">Don't have an account? Sign up</a>", loginForm);
-    signUp->setStyleSheet("font-size: 12pt;");
+    QLabel *signUp = new QLabel("Don't have an account? <a href=\"#\">Sign up</a>", loginForm);
+    signUp->setStyleSheet("font-size: 10pt;\
+                           padding: 10px;");
 
     loginFormVBox->addWidget(loginLabel);
     loginFormVBox->addWidget(descriptionLabel);

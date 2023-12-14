@@ -21,6 +21,10 @@
 #include <QSlider>
 #include <QCheckBox>
 #include <QtAwesome/QtAwesome.h>
+#include <QGraphicsScene>
+#include <QGraphicsVideoItem>
+#include <QGraphicsTextItem>
+#include <QGraphicsView>
 
 class MainWindow : public QWidget {
     Q_OBJECT
@@ -63,6 +67,7 @@ private:
     QPushButton* buttonSkipPrevious;
     QPushButton* buttonSkipNext;
     QSlider positionSlider;
+    QGraphicsView *graphicsView;
 };
 
 #endif // MAINWINDOW_H
