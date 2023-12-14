@@ -25,6 +25,7 @@
 #include <QGraphicsVideoItem>
 #include <QGraphicsTextItem>
 #include <QGraphicsView>
+#include <QFile>
 
 class MainWindow : public QWidget {
     Q_OBJECT
@@ -42,7 +43,8 @@ private slots:
     void SetupGalleryPage(QWidget *page);
     void SetupLoginPage(QWidget *page);
     void SetupSettingsPage(QWidget *page);
-    void addSettingSwitch(QVBoxLayout *layout, const QString &settingName, const QString &settingDescription);
+    QCheckBox* addSettingSwitch(QVBoxLayout *layout, const QString &settingName);
+    void change_theme();
     void login();
     void logout();
     void updateVolume(int volume);
@@ -52,6 +54,7 @@ private slots:
 
 private:
     fa::QtAwesome* awesome;
+    bool isLightTheme = true;
     QStackedWidget stackedWidget;
     QPushButton buttonPrevious;
     QPushButton buttonNext;

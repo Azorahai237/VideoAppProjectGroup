@@ -1,0 +1,36 @@
+* {
+    font-family: Roboto, sans-serif;
+    color: white;
+}
+
+#mainwindow {
+    background-color: #5A8564;
+}
+
+#loginpage {
+    border-image: url(":background.png") 0 0 0 0 stretch stretch;
+}
+
+
+QPushButton {
+    background-color: #10341C;
+}
+
+#loginForm * {
+    color: #125321;
+    padding: 10px;
+}
+
+#loginForm QLineEdit {
+    color: white;
+    padding: 20px ;
+    background-color: #125321;
+    margin-top: 10px;
+    border-radius: 25px;
+}
+
+#settingsPage * {
+    padding: 10px;
+    border-color: #125321;
+    border-radius: 20px;
+}

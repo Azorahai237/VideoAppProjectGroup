@@ -40,12 +40,20 @@ private:
 MainWindow::MainWindow(){
     awesome = new fa::QtAwesome(this);
     awesome->initFontAwesome();
+    awesome->setDefaultOption("color", QColor(190, 190, 190));
+    awesome->setDefaultOption("color-active", QColor(255, 255, 255));
+
+    this->setObjectName("mainwindow");
+
+    // Create a layout for the main window
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
     // Create six pages
     QWidget *pages[6];
 
     for (int i = 0; i < 6; ++i) {
         pages[i] = new QWidget;
+//        pages[i]->setObjectName("page");
 
         // Call the respective setup function for each page
         if (i == 0) {
@@ -64,6 +72,7 @@ MainWindow::MainWindow(){
 
         stackedWidget.addWidget(pages[i]);
     }
+    mainLayout->addWidget(&stackedWidget);
 
     // Connect buttons to navigate through pages
 
@@ -82,10 +91,6 @@ MainWindow::MainWindow(){
     connect(buttonPage5, &QPushButton::clicked, this, [this](){ goToPage(4); });
     // connect(&buttonPage5, &QPushButton::clicked, this, [this](){ goToPage(4); });
     // connect(&buttonPage6, &QPushButton::clicked, this, [this](){ goToPage(5); });
-
-    // Create a layout for the main window
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(&stackedWidget);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
 
@@ -320,8 +325,6 @@ void MainWindow::SetupProfilePage(QWidget *page){
 
     // Set the profile widget as the central widget
     page->setLayout(layout);
-
-    qDebug("Showing Profile section");
 }
 
 
@@ -448,9 +451,6 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     buttonLayout->addWidget(buttonSkipNext);
     layout->addLayout(buttonLayout);
 
-    // Set the background color of the page to green
-    page->setStyleSheet("background-color: #D3D3D3;");
-
     // Set the layout for the page
     page->setLayout(layout);
 }
@@ -463,57 +463,44 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
 
 
 void MainWindow::SetupLoginPage(QWidget *page){
+    page->setObjectName("loginpage");
+
     QWidget *container = new QWidget(page);
     QVBoxLayout *mainLayout = new QVBoxLayout(container);
 
     QWidget *loginForm = new QWidget(container);
     loginForm->setObjectName("loginForm");
-    loginForm->setStyleSheet("#loginForm {\
-                                background-color: #f1f1f1;\
-                                border: 1px solid #ccc;\
-                                border-radius: 3px;\
-                            }");
 
     QVBoxLayout *loginFormVBox = new QVBoxLayout(loginForm);
     loginFormVBox->setContentsMargins(40, 30, 40, 30);
 
     QLabel *loginLabel = new QLabel("Sign In", loginForm);
-    loginLabel->setStyleSheet("font-size: 28pt;\
-                               padding: 10px;\
-                              ");
+    loginLabel->setStyleSheet("font-size: 28pt;");
 
     QLabel *descriptionLabel = new QLabel("Please enter your credentials to sign in", loginForm);
-    descriptionLabel->setStyleSheet("padding: 10px;");
 
     QLineEdit *username = new QLineEdit(loginForm);
     username->setPlaceholderText("Username");
-    username->setStyleSheet("padding: 10px;");
 
     QLineEdit *password = new QLineEdit(loginForm);
     password->setPlaceholderText("Password");
-    password->setStyleSheet("padding: 10px;");
 
     QCheckBox *rememberMe = new QCheckBox("Remember me", loginForm);
-    rememberMe->setStyleSheet("padding: 10px;");
 
     QPushButton *loginButton = new QPushButton("Sign In", loginForm);
     loginButton->setStyleSheet("background-color: #4CAF50;\
                                 color: white;\
-                                padding: 10px;\
                                 margin: 8px 0;\
                                 border: none;\
                                 border-radius: 4px;\
-                                cursor: pointer;\
                                 font-size: 16px;");
     connect(loginButton, &QPushButton::clicked, this, &MainWindow::login);
 
     QLabel *forgotPassword = new QLabel("Forgot your password? <a href=\"#\">Reset Password</a>", loginForm);
-    forgotPassword->setStyleSheet("font-size: 10pt;\
-                                   padding: 10px;");
+    forgotPassword->setStyleSheet("font-size: 10pt;");
 
     QLabel *signUp = new QLabel("Don't have an account? <a href=\"#\">Sign up</a>", loginForm);
-    signUp->setStyleSheet("font-size: 10pt;\
-                           padding: 10px;");
+    signUp->setStyleSheet("font-size: 10pt;");
 
     loginFormVBox->addWidget(loginLabel);
     loginFormVBox->addWidget(descriptionLabel);
@@ -529,13 +516,13 @@ void MainWindow::SetupLoginPage(QWidget *page){
     // Center the container widget on the page
     QVBoxLayout *containerLayout = new QVBoxLayout(page);
     containerLayout->addWidget(container, 1, Qt::AlignHCenter | Qt::AlignVCenter);
-
-    qDebug("Showing Login page");
 }
 
 
 
 void MainWindow::SetupSettingsPage(QWidget *page){
+    page->setObjectName("settingsPage");
+
     QVBoxLayout *layout = new QVBoxLayout(page);
 
     QPushButton *backButton = new QPushButton(awesome->icon("fa-chevron-left"), "Back", page);
@@ -546,23 +533,24 @@ void MainWindow::SetupSettingsPage(QWidget *page){
     settingsLabel->setStyleSheet("font-size: 28pt;");
     layout->addWidget(settingsLabel);
 
-    addSettingSwitch(layout, "Wi-Fi", "Enable Wi-Fi");
-    addSettingSwitch(layout, "Bluetooth", "Enable Bluetooth");
-    addSettingSwitch(layout, "Notifications", "Enable Notifications");
-    addSettingSwitch(layout, "Dark Mode", "Enabe Dark Mode");
-    addSettingSwitch(layout, "", "");
-    addSettingSwitch(layout, "", "");
+    connect(addSettingSwitch(layout, "Enabe Dark Mode"), &QCheckBox::clicked, this, &MainWindow::change_theme);
+    addSettingSwitch(layout, "Enable Wi-Fi");
+    addSettingSwitch(layout, "Enable Bluetooth");
+    addSettingSwitch(layout, "Enable Notifications");
+    addSettingSwitch(layout, "Enable");
+    addSettingSwitch(layout, "Enable");
+    addSettingSwitch(layout, "Enable");
+    addSettingSwitch(layout, "Enable");
+    addSettingSwitch(layout, "Enable");
 
     page->setLayout(layout);
-
-    qDebug("Showing Settings page");
 }
 
-void MainWindow::addSettingSwitch(QVBoxLayout *layout, const QString &settingName, const QString &settingDescription) {
+QCheckBox* MainWindow::addSettingSwitch(QVBoxLayout *layout, const QString &settingName) {
     QWidget *settingWidget = new QWidget;
     QHBoxLayout *settingLayout = new QHBoxLayout(settingWidget);
 
-    QLabel *settingLabel = new QLabel(settingDescription, settingWidget);
+    QLabel *settingLabel = new QLabel(settingName, settingWidget);
 
     QCheckBox *settingSwitch = new QCheckBox(settingWidget);
 
@@ -570,6 +558,24 @@ void MainWindow::addSettingSwitch(QVBoxLayout *layout, const QString &settingNam
     settingLayout->addWidget(settingSwitch);
 
     layout->addWidget(settingWidget);
+
+    return settingSwitch;
+}
+
+void MainWindow::change_theme() {
+    if (isLightTheme) {
+        QFile styleFile(":/darktheme.qss");
+        styleFile.open(QFile::ReadOnly | QFile::Text);
+        setStyleSheet(styleFile.readAll());
+        styleFile.close();
+    } else {
+        QFile styleFile(":/lighttheme.qss");
+        styleFile.open(QFile::ReadOnly | QFile::Text);
+        setStyleSheet(styleFile.readAll());
+        styleFile.close();
+    }
+
+    isLightTheme = !isLightTheme;
 }
 
 void MainWindow::login() {
