@@ -115,13 +115,14 @@ void MainWindow::SetupFeedPage(QWidget *page) {
     QStringList sharers = {"UserA", "UserB", "UserC", "UserD", "UserE", "UserF"};
 
     QListWidget *feedListWidget = new QListWidget;
+    feedListWidget->setObjectName("feedListWidget");
 
     for (int i = 0; i < videoTitles.size(); ++i) {
         QListWidgetItem *item = new QListWidgetItem(feedListWidget);
         item->setSizeHint(QSize(250, 200));
 
         QWidget *videoItemWidget = new QWidget(feedListWidget);
-        videoItemWidget->setStyleSheet("background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 8px; margin: 5px;");
+        videoItemWidget->setObjectName("videoItemWidget");
 
         QVBoxLayout *itemLayout = new QVBoxLayout(videoItemWidget);
 
@@ -130,13 +131,13 @@ void MainWindow::SetupFeedPage(QWidget *page) {
         thumbnailLabel->setAlignment(Qt::AlignCenter);
         itemLayout->addWidget(thumbnailLabel);
 
-        QLabel *titleLabel = new QLabel(videoTitles.at(i), videoItemWidget);
-        titleLabel->setAlignment(Qt::AlignCenter);
+        QPushButton *titleLabel = new QPushButton(videoTitles.at(i), videoItemWidget);
+//        titleLabel->setAlignment(Qt::AlignCenter);
         titleLabel->setStyleSheet("font-weight: bold; margin-top: 5px;");
         itemLayout->addWidget(titleLabel);
 
-        QLabel *sharerLabel = new QLabel("Shared by: " + sharers.at(i), videoItemWidget);
-        sharerLabel->setAlignment(Qt::AlignCenter);
+        QPushButton *sharerLabel = new QPushButton("Shared by: " + sharers.at(i), videoItemWidget);
+//        sharerLabel->setAlignment(Qt::AlignCenter);
         sharerLabel->setStyleSheet("font-style: italic; color: #888;");
         itemLayout->addWidget(sharerLabel);
 
@@ -399,7 +400,7 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     volumeSlider.setOrientation(Qt::Horizontal);
     volumeSlider.setRange(0, 100);
     volumeSlider.setValue(50);
-    volumeSlider.setStyleSheet("QSlider::groove:horizontal { background: #4CAF50; border: 1px solid #4CAF50; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
+    volumeSlider.setStyleSheet("QSlider::groove:horizontal { background: #404040; border: 1px solid #282828; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
     connect(&volumeSlider, &QSlider::valueChanged, this, &MainWindow::updateVolume);
 
     // Create and set up the position slider with a green color
@@ -407,7 +408,7 @@ void MainWindow::SetupGalleryPage(QWidget *page) {
     positionLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  // Set fixed size policy
     positionLabel->setAlignment(Qt::AlignHCenter);  // Center align text
     positionSlider.setOrientation(Qt::Horizontal);
-    positionSlider.setStyleSheet("QSlider::groove:horizontal { background: #4CAF50; border: 1px solid #4CAF50; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
+    positionSlider.setStyleSheet("QSlider::groove:horizontal { background: #404040; border: 1px solid #282828; height: 8px; border-radius: 4px; } QSlider::handle:horizontal { background: #ffffff; border: 1px solid #4CAF50; width: 18px; height: 18px; margin: -8px 0; border-radius: 9px; }");
     connect(&positionSlider, &QSlider::sliderMoved, this, &MainWindow::setPosition);
 
     // Create layouts for each label-slider pair
@@ -585,6 +586,10 @@ void MainWindow::login() {
 }
 
 void MainWindow::logout() {
+    QFile styleFile(":/lighttheme.qss");
+    styleFile.open(QFile::ReadOnly | QFile::Text);
+    setStyleSheet(styleFile.readAll());
+    styleFile.close();
     buttonPage4->setVisible(false);
     buttonPage5->setVisible(true);
     goToPage(4);

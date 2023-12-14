@@ -7,6 +7,24 @@
     background-color: #404040;
 }
 
+#feedListWidget {
+    background-color: #404040;
+}
+
+#videoItemWidget {
+    background-color: #404040;
+    border: 1px solid #A0B5A5;
+    border-radius: 8px;
+    margin: 5px;
+}
+
+#videoItemWidget * {
+    background-color: #282828;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 10px 0 10px;
+}
+
 #loginpage {
     border-image: none;
 }
